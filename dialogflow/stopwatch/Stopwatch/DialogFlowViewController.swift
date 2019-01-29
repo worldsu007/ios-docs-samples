@@ -9,6 +9,7 @@
 import UIKit
 import MaterialComponents
 import AVFoundation
+import FirebaseFunctions
 
 let selfKey = "Self"
 let botKey = "Bot"
@@ -60,7 +61,7 @@ class DialogFlowViewController: UIViewController {
         self.view.tintColor = .black
         self.view.backgroundColor = ApplicationScheme.shared.colorScheme.surfaceColor
         self.title = "Dialogflow"
-        audioButton.isEnabled = false
+    //    audioButton.isEnabled = false
         //Audio Controller initialization
         AudioController.sharedInstance.delegate = self
         StopwatchService.sharedInstance.fetchToken {(error) in
@@ -68,6 +69,7 @@ class DialogFlowViewController: UIViewController {
                 DispatchQueue.main.async { [unowned self] in
                     self.tableViewDataSource.append([botKey: "Error: \(error)\n\nBe sure that you have a valid credentials.json in your app and a working network connection."])
                     self.tableView.reloadData()
+                    self.tableView.scrollToBottom()
                 }
             } else {
                 DispatchQueue.main.async { [unowned self] in
@@ -134,7 +136,7 @@ class DialogFlowViewController: UIViewController {
     @IBAction func didTapkeyboard(_ sender: Any) {
         //make intentTF first responder
         intentTextField.isHidden = false
-        intentTextField.becomeFirstResponder()
+        intentTextField.becomeFirstResponder()  
     }
     
     @IBAction func didTapMicrophone(_ sender: Any) {
@@ -190,7 +192,9 @@ extension DialogFlowViewController: AudioControllerDelegate {
                     if let error = error, !error.localizedDescription.isEmpty {
                         
                         strongSelf.tableViewDataSource.append([botKey: error.localizedDescription])
-                        strongSelf.tableView.reloadData()
+                        strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
+                       // strongSelf.tableView.reloadData()
+                        strongSelf.tableView.scrollToBottom()
                     } else if let response = response {
                         print(response)
                         if let recognitionResult = response.recognitionResult {
@@ -200,11 +204,14 @@ extension DialogFlowViewController: AudioControllerDelegate {
                         }
                         if !response.queryResult.queryText.isEmpty {
                             strongSelf.tableViewDataSource.append([selfKey: response.queryResult.queryText])
+                            strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
                         }
                         if !response.queryResult.fulfillmentText.isEmpty {
                             strongSelf.tableViewDataSource.append([botKey: response.queryResult.fulfillmentText])
+                            strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
                         }
-                        strongSelf.tableView.reloadData()
+                        //strongSelf.tableView.reloadData()
+                        strongSelf.tableView.scrollToBottom()
                     }
             })
             self.audioData = NSMutableData()
@@ -234,14 +241,19 @@ extension DialogFlowViewController {
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
-        let keyboardFrame =
+        var keyboardFrame =
             (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
         textFieldBottomConstraint.constant = -keyboardFrame.height
+        keyboardFrame = self.view.convert(keyboardFrame, from: nil)
+        tableView.scrollRectToVisible(keyboardFrame, animated: true)
     }
     
     @objc func keyboardWillHide(notification: NSNotification) {
         textFieldBottomConstraint.constant = 0
         intentTextField.isHidden = true
+        var contentInset:UIEdgeInsets = tableView.contentInset
+        contentInset.bottom = 0
+        tableView.contentInset = contentInset
         
     }
 }
@@ -266,16 +278,22 @@ extension DialogFlowViewController: UITextFieldDelegate {
             if let error = error, !error.localizedDescription.isEmpty {
                 
                 strongSelf.tableViewDataSource.append([botKey: error.localizedDescription])
-                strongSelf.tableView.reloadData()
+                strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
+                //strongSelf.tableView.reloadData()
+                strongSelf.tableView.scrollToBottom()
             } else if let response = response {
                 print(response)
                 if !response.queryResult.queryText.isEmpty {
                     strongSelf.tableViewDataSource.append([selfKey: response.queryResult.queryText])
+                    strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
                 }
                 if !response.queryResult.fulfillmentText.isEmpty {
                     strongSelf.tableViewDataSource.append([botKey: response.queryResult.fulfillmentText])
+                    strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
                 }
-                strongSelf.tableView.reloadData()
+                //strongSelf.tableView.reloadData()
+                strongSelf.tableView.scrollToBottom()
+                
             }
         })
     }
@@ -295,5 +313,16 @@ extension DialogFlowViewController: UITableViewDataSource {
             cell.botResponseText.text = data[botKey]
         }
         return cell
+    }
+}
+
+extension UITableView {
+    
+    func  scrollToBottom(animated: Bool = true) {
+        let sections = self.numberOfSections
+        let rows = self.numberOfRows(inSection: sections - 1)
+        if (rows > 0) {
+            self.scrollToRow(at: NSIndexPath(row: rows - 1, section: sections - 1) as IndexPath, at: .bottom, animated: true)
+        }
     }
 }
