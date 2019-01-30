@@ -1,5 +1,5 @@
 //
-//  DialogFlowViewController.swift
+//  DialogflowViewController.swift
 //  DFSampleUI
 //
 //  Created by Santhosh Vaddi on 1/20/19.
@@ -9,26 +9,26 @@
 import UIKit
 import MaterialComponents
 import AVFoundation
-import FirebaseFunctions
+import googleapis
+
 
 let selfKey = "Self"
 let botKey = "Bot"
 
-class DialogFlowViewController: UIViewController {
+class DialogflowViewController: UIViewController {
     var appBar = MDCAppBar()
     var audioData: NSMutableData!
     var listening: Bool = false
+    var isFirst: Bool = true
     // Text Field
     var intentTextField: MDCTextField = {
-        let usernameTextField = MDCTextField()
-        usernameTextField.translatesAutoresizingMaskIntoConstraints = false
-        return usernameTextField
+        let textField = MDCTextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        return textField
     }()
     var  textFieldBottomConstraint: NSLayoutConstraint!
     let intentTextFieldController: MDCTextInputControllerOutlined
     var tableViewDataSource = [[String: String]]()
-    
-    //    var audioToTextController = AudioToTextController()
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var optionsCard: MDCCard!
@@ -61,7 +61,6 @@ class DialogFlowViewController: UIViewController {
         self.view.tintColor = .black
         self.view.backgroundColor = ApplicationScheme.shared.colorScheme.surfaceColor
         self.title = "Dialogflow"
-    //    audioButton.isEnabled = false
         //Audio Controller initialization
         AudioController.sharedInstance.delegate = self
         StopwatchService.sharedInstance.fetchToken {(error) in
@@ -78,12 +77,12 @@ class DialogFlowViewController: UIViewController {
             }
         }
         
-        setUpNavigationBarAndItems()
         optionsCard.cornerRadius = optionsCard.frame.height/2
         self.view.addSubview(intentTextField)
         intentTextField.isHidden = true
         intentTextField.backgroundColor = .white
         intentTextField.returnKeyType = .send
+        setUpNavigationBarAndItems()
         
         // Constraints
         textFieldBottomConstraint = NSLayoutConstraint(item: intentTextField,
@@ -114,23 +113,6 @@ class DialogFlowViewController: UIViewController {
         self.appBar.headerViewController.headerView.trackingScrollView = tableView
         appBar.addSubviewsToParent()
         MDCAppBarColorThemer.applySemanticColorScheme(ApplicationScheme.shared.colorScheme, to:self.appBar)
-        
-        // Setup Navigation Items
-        let menuItemImage = UIImage(named: "MenuItem")
-        let templatedMenuItemImage = menuItemImage?.withRenderingMode(.alwaysTemplate)
-        let menuItem = UIBarButtonItem(image: templatedMenuItemImage,
-                                       style: .plain,
-                                       target: nil,
-                                       action: nil)
-        //        self.navigationItem.leftBarButtonItem = menuItem
-        
-        let tuneItemImage = UIImage(named: "TuneItem")
-        let templatedTuneItemImage = tuneItemImage?.withRenderingMode(.alwaysTemplate)
-        let tuneItem = UIBarButtonItem(image: templatedTuneItemImage,
-                                       style: .plain,
-                                       target: nil,
-                                       action: nil)
-        //        self.navigationItem.rightBarButtonItem = tuneItem
     }
     
     @IBAction func didTapkeyboard(_ sender: Any) {
@@ -150,10 +132,10 @@ class DialogFlowViewController: UIViewController {
     
 }
 
-extension DialogFlowViewController: AudioControllerDelegate {
+extension DialogflowViewController: AudioControllerDelegate {
     func startListening() {
         listening = true
-                //button.setTitle("Listening... (Stop)", for: .normal)
+        audioButton.setImage(#imageLiteral(resourceName: "CancelButton"), for: .normal)
         let audioSession = AVAudioSession.sharedInstance()
         do {
             try audioSession.setCategory(AVAudioSessionCategoryRecord)
@@ -168,9 +150,9 @@ extension DialogFlowViewController: AudioControllerDelegate {
     }
     
     func stopListening() {
+        audioButton.setImage(#imageLiteral(resourceName: "Mic"), for: .normal)
         _ = AudioController.sharedInstance.stop()
         StopwatchService.sharedInstance.stopStreaming()
-        //        button.setTitle("Start Listening", for: .normal)
         listening = false
     }
     func processSampleData(_ data: Data) -> Void {
@@ -193,24 +175,36 @@ extension DialogFlowViewController: AudioControllerDelegate {
                         
                         strongSelf.tableViewDataSource.append([botKey: error.localizedDescription])
                         strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
-                       // strongSelf.tableView.reloadData()
                         strongSelf.tableView.scrollToBottom()
                     } else if let response = response {
                         print(response)
+                        print(response.recognitionResult.transcript)
+                        if !response.recognitionResult.transcript.isEmpty {
+                            if strongSelf.isFirst{
+                                strongSelf.tableViewDataSource.append([selfKey: response.recognitionResult.transcript])
+                                strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
+                                strongSelf.isFirst = false
+                            }else {
+                                strongSelf.tableViewDataSource.removeLast()
+                                strongSelf.tableViewDataSource.append([selfKey: response.recognitionResult.transcript])
+                                strongSelf.tableView.reloadRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
+                            }
+                        }
                         if let recognitionResult = response.recognitionResult {
                             if recognitionResult.isFinal {
                                 strongSelf.stopListening()
+                                strongSelf.isFirst = true
                             }
                         }
                         if !response.queryResult.queryText.isEmpty {
+                            strongSelf.tableViewDataSource.removeLast()
                             strongSelf.tableViewDataSource.append([selfKey: response.queryResult.queryText])
-                            strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
+                            strongSelf.tableView.reloadRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count -  1, section: 0)], with: .automatic)
                         }
                         if !response.queryResult.fulfillmentText.isEmpty {
                             strongSelf.tableViewDataSource.append([botKey: response.queryResult.fulfillmentText])
                             strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
                         }
-                        //strongSelf.tableView.reloadData()
                         strongSelf.tableView.scrollToBottom()
                     }
             })
@@ -219,8 +213,8 @@ extension DialogFlowViewController: AudioControllerDelegate {
     }
 }
 
-extension DialogFlowViewController {
-    // MARK: - Keyboard Handling
+// MARK: - Keyboard Handling
+extension DialogflowViewController {
     
     func registerKeyboardNotifications() {
         NotificationCenter.default.addObserver(
@@ -228,11 +222,7 @@ extension DialogFlowViewController {
             selector: #selector(self.keyboardWillShow),
             name: NSNotification.Name(rawValue: "UIKeyboardWillShowNotification"),
             object: nil)
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(self.keyboardWillShow),
-            name: NSNotification.Name(rawValue: "UIKeyboardWillChangeFrameNotification"),
-            object: nil)
+        
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(self.keyboardWillHide),
@@ -241,36 +231,32 @@ extension DialogFlowViewController {
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
-        var keyboardFrame =
+        let keyboardFrame =
             (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
         textFieldBottomConstraint.constant = -keyboardFrame.height
-        keyboardFrame = self.view.convert(keyboardFrame, from: nil)
-        tableView.scrollRectToVisible(keyboardFrame, animated: true)
+    
     }
     
     @objc func keyboardWillHide(notification: NSNotification) {
         textFieldBottomConstraint.constant = 0
         intentTextField.isHidden = true
-        var contentInset:UIEdgeInsets = tableView.contentInset
-        contentInset.bottom = 0
-        tableView.contentInset = contentInset
         
     }
 }
 
-extension DialogFlowViewController: UITextFieldDelegate {
+extension DialogflowViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         if let text = textField.text, text.count > 0 {
-            sendTextToDialogFlow(text: text)
+            sendTextToDialogflow(text: text)
             textField.text = ""
         }
         
         return true
     }
     
-    func sendTextToDialogFlow(text: String) {
+    func sendTextToDialogflow(text: String) {
         StopwatchService.sharedInstance.streamText(text, completion: { [weak self] (response, error) in
             guard let strongSelf = self else {
                 return
@@ -279,7 +265,6 @@ extension DialogFlowViewController: UITextFieldDelegate {
                 
                 strongSelf.tableViewDataSource.append([botKey: error.localizedDescription])
                 strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
-                //strongSelf.tableView.reloadData()
                 strongSelf.tableView.scrollToBottom()
             } else if let response = response {
                 print(response)
@@ -291,7 +276,6 @@ extension DialogFlowViewController: UITextFieldDelegate {
                     strongSelf.tableViewDataSource.append([botKey: response.queryResult.fulfillmentText])
                     strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
                 }
-                //strongSelf.tableView.reloadData()
                 strongSelf.tableView.scrollToBottom()
                 
             }
@@ -300,7 +284,7 @@ extension DialogFlowViewController: UITextFieldDelegate {
 }
 
 
-extension DialogFlowViewController: UITableViewDataSource {
+extension DialogflowViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return tableViewDataSource.count
     }
