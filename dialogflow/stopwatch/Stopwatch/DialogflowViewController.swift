@@ -136,6 +136,7 @@ extension DialogflowViewController: AudioControllerDelegate {
     func startListening() {
         listening = true
         audioButton.setImage(#imageLiteral(resourceName: "CancelButton"), for: .normal)
+        keybordButton.isEnabled = false
         let audioSession = AVAudioSession.sharedInstance()
         do {
             try audioSession.setCategory(AVAudioSessionCategoryRecord)
@@ -151,6 +152,7 @@ extension DialogflowViewController: AudioControllerDelegate {
     
     func stopListening() {
         audioButton.setImage(#imageLiteral(resourceName: "Mic"), for: .normal)
+        keybordButton.isEnabled = true
         _ = AudioController.sharedInstance.stop()
         StopwatchService.sharedInstance.stopStreaming()
         listening = false

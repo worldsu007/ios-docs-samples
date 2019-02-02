@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		2C450CC6320CA9890051ABAF /* Pods_Stopwatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0B7F558BD8BC89862C8C277 /* Pods_Stopwatch.framework */; };
-		6711B8AF2201723A00FD50EE /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6711B8AE2201723A00FD50EE /* GoogleService-Info.plist */; };
 		677B630221F91645000C58E9 /* DialogflowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 677B62FB21F91645000C58E9 /* DialogflowViewController.swift */; };
 		677B630321F91645000C58E9 /* Rubik-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 677B62FD21F91645000C58E9 /* Rubik-Medium.ttf */; };
 		677B630421F91645000C58E9 /* Rubik-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 677B62FE21F91645000C58E9 /* Rubik-Regular.ttf */; };
@@ -22,13 +21,11 @@
 		D35AE06C1FD5B1A800ABC0EE /* credentials.json in Resources */ = {isa = PBXBuildFile; fileRef = D35AE06B1FD5B1A800ABC0EE /* credentials.json */; };
 		D392D9861C94937D002F5132 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D392D9851C94937D002F5132 /* Main.storyboard */; };
 		D3E34EA11D77541D00EF755D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E34EA01D77541D00EF755D /* AppDelegate.swift */; };
-		D3E34EA51D7757CC00EF755D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E34EA41D7757CC00EF755D /* ViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		54C3D1E96C8C43AB14662311 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E83ACE29B0D0DF0085BA8F2 /* Pods-Stopwatch.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Stopwatch.release.xcconfig"; path = "Pods/Target Support Files/Pods-Stopwatch/Pods-Stopwatch.release.xcconfig"; sourceTree = "<group>"; };
-		6711B8AE2201723A00FD50EE /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		677B62FB21F91645000C58E9 /* DialogflowViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogflowViewController.swift; sourceTree = "<group>"; };
 		677B62FD21F91645000C58E9 /* Rubik-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Rubik-Medium.ttf"; sourceTree = "<group>"; };
 		677B62FE21F91645000C58E9 /* Rubik-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Rubik-Regular.ttf"; sourceTree = "<group>"; };
@@ -48,7 +45,6 @@
 		D392D9851C94937D002F5132 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		D3E34E9F1D77541C00EF755D /* Stopwatch-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Stopwatch-Bridging-Header.h"; sourceTree = "<group>"; };
 		D3E34EA01D77541D00EF755D /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		D3E34EA41D7757CC00EF755D /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		F3215BCD5D87DFF7F2965B8A /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -105,7 +101,6 @@
 		D34C17CB1C948F5700D69BCA /* Stopwatch */ = {
 			isa = PBXGroup;
 			children = (
-				6711B8AE2201723A00FD50EE /* GoogleService-Info.plist */,
 				677B630021F91645000C58E9 /* ApplicationScheme.swift */,
 				677B630121F91645000C58E9 /* ChatTableViewCell.swift */,
 				677B62FB21F91645000C58E9 /* DialogflowViewController.swift */,
@@ -119,7 +114,6 @@
 				D3E34E9F1D77541C00EF755D /* Stopwatch-Bridging-Header.h */,
 				D31E0EB71D778A56006A50AB /* StopwatchService.swift */,
 				D34C17CC1C948F5700D69BCA /* Supporting Files */,
-				D3E34EA41D7757CC00EF755D /* ViewController.swift */,
 			);
 			path = Stopwatch;
 			sourceTree = "<group>";
@@ -204,7 +198,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D392D9861C94937D002F5132 /* Main.storyboard in Resources */,
-				6711B8AF2201723A00FD50EE /* GoogleService-Info.plist in Resources */,
 				677B630421F91645000C58E9 /* Rubik-Regular.ttf in Resources */,
 				D34C17DC1C948F5800D69BCA /* LaunchScreen.storyboard in Resources */,
 				D35AE06C1FD5B1A800ABC0EE /* credentials.json in Resources */,
@@ -303,7 +296,6 @@
 				D31E0EBA1D77AA2F006A50AB /* AudioController.swift in Sources */,
 				677B630621F91645000C58E9 /* ApplicationScheme.swift in Sources */,
 				D31E0EB81D778A56006A50AB /* StopwatchService.swift in Sources */,
-				D3E34EA51D7757CC00EF755D /* ViewController.swift in Sources */,
 				677B630721F91645000C58E9 /* ChatTableViewCell.swift in Sources */,
 				677B630221F91645000C58E9 /* DialogflowViewController.swift in Sources */,
 				D3E34EA11D77541D00EF755D /* AppDelegate.swift in Sources */,
