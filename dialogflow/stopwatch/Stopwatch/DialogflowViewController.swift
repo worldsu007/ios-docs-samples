@@ -45,7 +45,7 @@ class DialogflowViewController: UIViewController {
         registerKeyboardNotifications()
         
     }
-    
+    //init with coder
     required init?(coder aDecoder: NSCoder) {
         intentTextFieldController = MDCTextInputControllerOutlined(textInput: intentTextField)
         
@@ -114,13 +114,14 @@ class DialogflowViewController: UIViewController {
         appBar.addSubviewsToParent()
         MDCAppBarColorThemer.applySemanticColorScheme(ApplicationScheme.shared.colorScheme, to:self.appBar)
     }
-    
+    //Action to start text chat bot
     @IBAction func didTapkeyboard(_ sender: Any) {
         //make intentTF first responder
         intentTextField.isHidden = false
         intentTextField.becomeFirstResponder()  
     }
     
+    //Action to stat microphone for speech chat
     @IBAction func didTapMicrophone(_ sender: Any) {
         if !listening {
             self.startListening()
@@ -157,6 +158,8 @@ extension DialogflowViewController: AudioControllerDelegate {
         StopwatchService.sharedInstance.stopStreaming()
         listening = false
     }
+    
+    //Process sample data
     func processSampleData(_ data: Data) -> Void {
         audioData.append(data)
         
@@ -246,6 +249,7 @@ extension DialogflowViewController {
     }
 }
 
+//MARK: Textfield delegate
 extension DialogflowViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -285,7 +289,7 @@ extension DialogflowViewController: UITextFieldDelegate {
     }
 }
 
-
+// MARK: Table delegate handling
 extension DialogflowViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return tableViewDataSource.count
