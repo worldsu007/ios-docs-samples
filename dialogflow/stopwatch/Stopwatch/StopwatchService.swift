@@ -27,6 +27,8 @@ let TokenProviderURL = "http://localhost:8080"
 typealias StopwatchCompletionHandler =
   (DFStreamingDetectIntentResponse?, NSError?) -> (Void)
 
+typealias StopwatchTextCompletionHandler = (DFDetectIntentResponse?, NSError?) -> (Void)
+
 enum StopwatchServiceError: Error {
   case unknownError
   case invalidCredentials
@@ -128,6 +130,30 @@ class StopwatchService {
     streamingDetectIntentRequest.inputAudio = audioData as Data
     writer.writeValue(streamingDetectIntentRequest)
   }
+    
+    func streamText(_ userInput: String, completion: @escaping StopwatchTextCompletionHandler) {
+        client = DFSessions(host:Host)
+        //send an initial request message to cinfigure the service
+        let queryInput = DFQueryInput()
+        let inputTextConfig = DFTextInput()
+        inputTextConfig.text = userInput
+        inputTextConfig.languageCode = "en-US"
+        queryInput.text = inputTextConfig
+        
+        let detectIntentRequest = DFDetectIntentRequest()
+        detectIntentRequest.session = "projects/" + ProjectName +
+            "/agent/sessions/" + SessionID
+        detectIntentRequest.queryInput = queryInput
+        
+        
+        call = client.rpcToDetectIntent(with: detectIntentRequest, handler: {(response, error) in completion(response, error as NSError?)
+            
+        })
+        call.requestHeaders.setObject(NSString(string: self.authorization()), forKey: NSString(string: "Authorization"))
+        
+        call.start()
+        
+    }
 
   func stopStreaming() {
     if (!streaming) {
