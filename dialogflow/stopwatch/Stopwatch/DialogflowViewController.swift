@@ -134,6 +134,7 @@ class DialogflowViewController: UIViewController {
 }
 
 extension DialogflowViewController: AudioControllerDelegate {
+    //Microphone start listening
     func startListening() {
         listening = true
         audioButton.setImage(#imageLiteral(resourceName: "CancelButton"), for: .normal)
@@ -151,6 +152,7 @@ extension DialogflowViewController: AudioControllerDelegate {
         _ = AudioController.sharedInstance.start()
     }
     
+    //Microphone stops listening
     func stopListening() {
         audioButton.setImage(#imageLiteral(resourceName: "Mic"), for: .normal)
         keybordButton.isEnabled = true
@@ -239,7 +241,7 @@ extension DialogflowViewController {
         let keyboardFrame =
             (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
         textFieldBottomConstraint.constant = -keyboardFrame.height
-    
+        
     }
     
     @objc func keyboardWillHide(notification: NSNotification) {
