@@ -33,7 +33,8 @@ class DialogflowViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var optionsCard: MDCCard!
     @IBOutlet weak var audioButton: UIButton!
-    @IBOutlet weak var keybordButton: UIButton!
+    @IBOutlet weak var keyboardButton: UIButton!
+    @IBOutlet weak var cancelButton: UIButton!
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         intentTextFieldController = MDCTextInputControllerOutlined(textInput: intentTextField)
@@ -131,14 +132,24 @@ class DialogflowViewController: UIViewController {
         
     }
     
+    
+    @IBAction func didTapCancelButton(_ sender: Any) {
+        optionsCard.isHidden = false
+        optionsCard.isHidden = true
+        DispatchQueue.global().async {
+            self.stopListening()
+        }
+        
+    }
+    
 }
 
 extension DialogflowViewController: AudioControllerDelegate {
     //Microphone start listening
     func startListening() {
         listening = true
-        audioButton.setImage(#imageLiteral(resourceName: "CancelButton"), for: .normal)
-        keybordButton.isEnabled = false
+        optionsCard.isHidden = true
+        cancelButton.isHidden = false
         let audioSession = AVAudioSession.sharedInstance()
         do {
             try audioSession.setCategory(AVAudioSessionCategoryRecord)
@@ -154,8 +165,8 @@ extension DialogflowViewController: AudioControllerDelegate {
     
     //Microphone stops listening
     func stopListening() {
-        audioButton.setImage(#imageLiteral(resourceName: "Mic"), for: .normal)
-        keybordButton.isEnabled = true
+        optionsCard.isHidden = false
+        cancelButton.isHidden = true
         _ = AudioController.sharedInstance.stop()
         StopwatchService.sharedInstance.stopStreaming()
         listening = false
