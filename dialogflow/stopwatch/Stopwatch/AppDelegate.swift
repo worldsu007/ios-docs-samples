@@ -14,16 +14,31 @@
 // limitations under the License.
 //
 import UIKit
+import FirebaseFunctions
+import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
-  var window: UIWindow?
-
-  func application
-    (_ application: UIApplication,
-     didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil)
-    -> Bool {
-      return true
-  }
+    
+    var window: UIWindow?
+    
+    
+    func application
+        (_ application: UIApplication,
+         didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey : Any]? = nil)
+        -> Bool {
+            FirebaseApp.configure()
+            generateAccessToken()
+            return true
+    }
+    
+    func generateAccessToken() {
+        Auth.auth().signInAnonymously() { (authResult, error) in
+            let user = authResult?.user
+            guard let uid = user?.uid else {
+                return
+            }
+            TokenGenerator.sharedInstance.retrieveAccessTokenFor(uid: uid)
+        }
+    } 
 }

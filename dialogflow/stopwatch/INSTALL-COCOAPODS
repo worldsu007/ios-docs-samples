@@ -42,8 +42,6 @@ open Stopwatch.xcworkspace
 
 echo "Now press the run button!"
 
-
-
 grep -rl "google/cloud/conversation/v1alpha/Context.pbobjc.h"  google/** | \
 	xargs sed -i '' s@'"google\/cloud\/conversation\/v1alpha\/Context\.pbobjc\.h"'@'\<googleapis\/Context\.pbobjc\.h\>'@g
 grep -rl "google/cloud/conversation/v1alpha/DetectIntent.pbobjc.h"  google/** | \
@@ -54,3 +52,12 @@ grep -rl "google/cloud/conversation/v1alpha/Intent.pbobjc.h"  google/** | \
 	xargs sed -i '' s@'"google\/cloud\/conversation\/v1alpha\/Intent\.pbobjc\.h"'@'\<googleapis\/Intent\.pbobjc\.h\>'@g
 grep -rl "google/cloud/conversation/v1alpha/SessionEntityType.pbobjc.h"  google/** | \
 	xargs sed -i '' s@'"google\/cloud\/conversation\/v1alpha\/SessionEntityType\.pbobjc\.h"'@'\<googleapis\/SessionEntityType\.pbobjc\.h\>'@g
+
+grep -rl "Annotations.pbobjc.h"  pods/** | \
+	xargs sed -i '' s@'"Annotations\.pbobjc\.h"'@'\<Firestore\/Protos\/objc\/google\/api\/Annotations\.pbobjc\.h\>'@g
+
+grep -rl "Status.pbobjc.h"  pods/** | \
+	xargs sed -i '' s@'"Status\.pbobjc\.h"'@'\<Firestore\/Protos\/objc\/google\/rpc\/Status\.pbobjc\.h\>'@g
+
+grep -rl "Latlng.pbobjc.h"  pods/** | \
+	xargs sed -i '' s@'"Latlng\.pbobjc\.h"'@'\<Firestore\/Protos\/objc\/google\/type\/Latlng\.pbobjc\.h\>'@g

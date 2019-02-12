@@ -35,7 +35,9 @@ class DialogflowViewController: UIViewController {
     @IBOutlet weak var audioButton: UIButton!
     @IBOutlet weak var keyboardButton: UIButton!
     @IBOutlet weak var cancelButton: UIButton!
+
     
+    //init with nib name
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         intentTextFieldController = MDCTextInputControllerOutlined(textInput: intentTextField)
         
@@ -46,6 +48,7 @@ class DialogflowViewController: UIViewController {
         registerKeyboardNotifications()
         
     }
+
     //init with coder
     required init?(coder aDecoder: NSCoder) {
         intentTextFieldController = MDCTextInputControllerOutlined(textInput: intentTextField)
@@ -64,20 +67,6 @@ class DialogflowViewController: UIViewController {
         self.title = "Dialogflow"
         //Audio Controller initialization
         AudioController.sharedInstance.delegate = self
-        StopwatchService.sharedInstance.fetchToken {(error) in
-            if let error = error {
-                DispatchQueue.main.async { [unowned self] in
-                    self.tableViewDataSource.append([botKey: "Error: \(error)\n\nBe sure that you have a valid credentials.json in your app and a working network connection."])
-                    self.tableView.reloadData()
-                    self.tableView.scrollToBottom()
-                }
-            } else {
-                DispatchQueue.main.async { [unowned self] in
-                    self.audioButton.isEnabled = true
-                }
-            }
-        }
-        
         optionsCard.cornerRadius = optionsCard.frame.height/2
         self.view.addSubview(intentTextField)
         intentTextField.isHidden = true
@@ -109,7 +98,7 @@ class DialogflowViewController: UIViewController {
     }
     
     func setUpNavigationBarAndItems() {
-        // AppBar Init
+         //Initialize and add AppBar
         self.addChildViewController(appBar.headerViewController)
         self.appBar.headerViewController.headerView.trackingScrollView = tableView
         appBar.addSubviewsToParent()
@@ -150,6 +139,7 @@ extension DialogflowViewController: AudioControllerDelegate {
         listening = true
         optionsCard.isHidden = true
         cancelButton.isHidden = false
+        
         let audioSession = AVAudioSession.sharedInstance()
         do {
             try audioSession.setCategory(AVAudioSessionCategoryRecord)
@@ -275,12 +265,13 @@ extension DialogflowViewController: UITextFieldDelegate {
         return true
     }
     
+    //Start sending text
     func sendTextToDialogflow(text: String) {
         StopwatchService.sharedInstance.streamText(text, completion: { [weak self] (response, error) in
             guard let strongSelf = self else {
                 return
             }
-            if let error = error, !error.localizedDescription.isEmpty {
+            if let error = error, !error.localizedDescription.isEmpty {	
                 
                 strongSelf.tableViewDataSource.append([botKey: error.localizedDescription])
                 strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
