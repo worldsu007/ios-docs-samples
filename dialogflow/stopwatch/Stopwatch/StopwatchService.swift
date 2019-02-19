@@ -17,7 +17,7 @@ import Foundation
 import googleapis
 
 let Host = "dialogflow.googleapis.com"
-let ProjectName = "your-project-identifier" // UPDATE THIS
+let ProjectName = "dialogflowsamples-santhosh-2" // UPDATE THIS
 let SessionID = "001"
 let SampleRate = 16000
 
@@ -33,103 +33,104 @@ enum StopwatchServiceError: Error {
 }
 
 class StopwatchService {
-    var sampleRate: Int = SampleRate
-    private var streaming = false
-    
-    private var client : DFSessions!
-    private var writer : GRXBufferedPipe!
-    private var call : GRPCProtoCall!
-    
-    var token : String! {
-        didSet {
-            // Post a notification to unblock the UI
-        }
+  var sampleRate: Int = SampleRate
+  private var streaming = false
+
+  private var client : DFSessions!
+  private var writer : GRXBufferedPipe!
+  private var call : GRPCProtoCall!
+
+  var token : String! {
+    didSet {
+      NotificationCenter.default.post(name: Notification.Name("TokenReceived"), object: nil, userInfo: nil)
+
     }
-    
-    static let sharedInstance = StopwatchService()
-    
-    func authorization() -> String {
-        if self.token != nil {
-            return "Bearer " + self.token
-        } else {
-            return "No token is available"
-        }
+  }
+
+  static let sharedInstance = StopwatchService()
+
+  func authorization() -> String {
+    if self.token != nil {
+      return "Bearer " + self.token
+    } else {
+      return "No token is available"
     }
-    
-    
-    func streamAudioData(_ audioData: NSData, completion: @escaping StopwatchCompletionHandler) {
-        if (!streaming) {
-            // if we aren't already streaming, set up a gRPC connection
-            client = DFSessions(host:Host)
-            writer = GRXBufferedPipe()
-            call = client.rpcToStreamingDetectIntent(
-                withRequestsWriter: writer,
-                eventHandler: { (done, response, error) in
-                    completion(response, error as NSError?)
-            })
-            // authenticate using an authorization token (obtained using OAuth)
-            call.requestHeaders.setObject(NSString(string:self.authorization()),
-                                          forKey:NSString(string:"Authorization"))
-            call.start()
-            streaming = true
-            
-            // send an initial request message to configure the service
-            let queryParams = DFQueryParameters()
-            let queryInput = DFQueryInput()
-            let inputAudioConfig = DFInputAudioConfig()
-            inputAudioConfig.audioEncoding = DFAudioEncoding(rawValue:1)!
-            inputAudioConfig.languageCode = "en-US"
-            inputAudioConfig.sampleRateHertz = Int32(sampleRate)
-            queryInput.audioConfig = inputAudioConfig
-            
-            let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
-            streamingDetectIntentRequest.session = "projects/" + ProjectName +
-                "/agent/sessions/" + SessionID
-            streamingDetectIntentRequest.singleUtterance = true
-            streamingDetectIntentRequest.queryParams = queryParams
-            streamingDetectIntentRequest.queryInput = queryInput
-            writer.writeValue(streamingDetectIntentRequest)
-        }
-        
-        // send a request message containing the audio data
-        let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
-        streamingDetectIntentRequest.inputAudio = audioData as Data
-        writer.writeValue(streamingDetectIntentRequest)
+  }
+  
+  func streamAudioData(_ audioData: NSData, completion: @escaping StopwatchCompletionHandler) {
+    if (!streaming) {
+      // if we aren't already streaming, set up a gRPC connection
+      client = DFSessions(host:Host)
+      writer = GRXBufferedPipe()
+      call = client.rpcToStreamingDetectIntent(
+        withRequestsWriter: writer,
+        eventHandler: { (done, response, error) in
+          completion(response, error as NSError?)
+      })
+      // authenticate using an authorization token (obtained using OAuth)
+      call.requestHeaders.setObject(NSString(string:self.authorization()),
+                                    forKey:NSString(string:"Authorization"))
+      call.start()
+      streaming = true
+
+      // send an initial request message to configure the service
+      let queryParams = DFQueryParameters()
+      let queryInput = DFQueryInput()
+      let inputAudioConfig = DFInputAudioConfig()
+      inputAudioConfig.audioEncoding = DFAudioEncoding(rawValue:1)!
+      inputAudioConfig.languageCode = "en-US"
+      inputAudioConfig.sampleRateHertz = Int32(sampleRate)
+      queryInput.audioConfig = inputAudioConfig
+
+      let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
+      streamingDetectIntentRequest.session = "projects/" + ProjectName +
+        "/agent/sessions/" + SessionID
+      streamingDetectIntentRequest.singleUtterance = true
+      streamingDetectIntentRequest.queryParams = queryParams
+      streamingDetectIntentRequest.queryInput = queryInput
+      writer.writeValue(streamingDetectIntentRequest)
     }
-    
-    func streamText(_ userInput: String, completion: @escaping StopwatchTextCompletionHandler) {
-        client = DFSessions(host:Host)
-        //send an initial request message to cinfigure the service
-        let queryInput = DFQueryInput()
-        let inputTextConfig = DFTextInput()
-        inputTextConfig.text = userInput
-        inputTextConfig.languageCode = "en-US"
-        queryInput.text = inputTextConfig
-        
-        let detectIntentRequest = DFDetectIntentRequest()
-        detectIntentRequest.session = "projects/" + ProjectName +
-            "/agent/sessions/" + SessionID
-        detectIntentRequest.queryInput = queryInput
-     
-        call = client.rpcToDetectIntent(with: detectIntentRequest, handler: {(response, error) in completion(response, error as NSError?)
-            
-        })
-        call.requestHeaders.setObject(NSString(string: self.authorization()), forKey: NSString(string: "Authorization"))
-        
-        call.start()
-        
+
+    // send a request message containing the audio data
+    let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
+    streamingDetectIntentRequest.inputAudio = audioData as Data
+    writer.writeValue(streamingDetectIntentRequest)
+  }
+
+  func streamText(_ userInput: String, completion: @escaping StopwatchTextCompletionHandler) {
+    client = DFSessions(host:Host)
+    //send an initial request message to cinfigure the service
+    let queryInput = DFQueryInput()
+    let inputTextConfig = DFTextInput()
+    inputTextConfig.text = userInput
+    inputTextConfig.languageCode = "en-US"
+    queryInput.text = inputTextConfig
+
+    let detectIntentRequest = DFDetectIntentRequest()
+    detectIntentRequest.session = "projects/" + ProjectName +
+      "/agent/sessions/" + SessionID
+    detectIntentRequest.queryInput = queryInput
+
+    call = client.rpcToDetectIntent(with: detectIntentRequest, handler: {(response, error) in completion(response, error as NSError?)
+
+    })
+    call.requestHeaders.setObject(NSString(string: self.authorization()), forKey: NSString(string: "Authorization"))
+
+    call.start()
+
+  }
+
+  func stopStreaming() {
+    if (!streaming) {
+      return
     }
-    
-    func stopStreaming() {
-        if (!streaming) {
-            return
-        }
-        writer.finishWithError(nil)
-        streaming = false
-    }
-    
-    func isStreaming() -> Bool {
-        return streaming
-    }
+    writer.finishWithError(nil)
+    streaming = false
+  }
+
+  func isStreaming() -> Bool {
+    return streaming
+  }
 }
+  
 

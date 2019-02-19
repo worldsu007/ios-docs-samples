@@ -19,7 +19,7 @@ import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    
+
     var window: UIWindow?
     
     
@@ -41,4 +41,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             TokenGenerator.sharedInstance.retrieveAccessTokenFor(uid: uid)
         }
     } 
+
 }
