@@ -178,11 +178,13 @@ extension DialogflowViewController: AudioControllerDelegate {
 
   //Microphone stops listening
   func stopListening() {
-    optionsCard.isHidden = false
-    cancelButton.isHidden = true
-    _ = AudioController.sharedInstance.stop()
-    StopwatchService.sharedInstance.stopStreaming()
-    listening = false
+    DispatchQueue.main.async {
+      self.optionsCard.isHidden = false
+      self.cancelButton.isHidden = true
+      _ = AudioController.sharedInstance.stop()
+      StopwatchService.sharedInstance.stopStreaming()
+      self.listening = false
+    }
   }
 
   //Process sample data
