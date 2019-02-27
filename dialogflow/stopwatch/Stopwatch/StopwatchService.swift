@@ -17,7 +17,7 @@ import Foundation
 import googleapis
 
 let Host = "dialogflow.googleapis.com"
-let ProjectName = "dialogflowsamples-santhosh-2" // UPDATE THIS
+let ProjectName = "your-project-identifier" // UPDATE THIS
 let SessionID = "001"
 let SampleRate = 16000
 
