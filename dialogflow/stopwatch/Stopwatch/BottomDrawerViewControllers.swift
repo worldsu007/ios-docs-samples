@@ -118,7 +118,7 @@ class DrawerHeaderViewController: UIViewController,MDCBottomDrawerHeader {
   let preferredHeight: CGFloat = 80
   let titleLabel : UILabel = {
     let label = UILabel(frame: .zero)
-    label.text = "Optional Features"
+    label.text = "Tap to enable additional Dialogflow features"
     label.sizeToFit()
     return label
   }()

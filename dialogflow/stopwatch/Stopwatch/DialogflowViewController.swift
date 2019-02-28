@@ -63,7 +63,7 @@ class DialogflowViewController: UIViewController {
 
     self.view.tintColor = .black
     self.view.backgroundColor = ApplicationScheme.shared.colorScheme.surfaceColor
-    self.title = "Dialogflow"
+    self.title = "Dialogflow Sample"
     setUpNavigationBarAndItems()
     registerKeyboardNotifications()
     //Audio Controller initialization
@@ -142,7 +142,7 @@ class DialogflowViewController: UIViewController {
     let barButtonLeadingItem = UIBarButtonItem()
     barButtonLeadingItem.tintColor = ApplicationScheme.shared.colorScheme.primaryColorVariant
     //barButtonLeadingItem.image = #imageLiteral(resourceName: "Menu")
-    barButtonLeadingItem.title = "opt"
+    barButtonLeadingItem.title = "more"
     barButtonLeadingItem.target = self
     barButtonLeadingItem.action = #selector(presentNavigationDrawer)
     appBar.navigationBar.backItem = barButtonLeadingItem
