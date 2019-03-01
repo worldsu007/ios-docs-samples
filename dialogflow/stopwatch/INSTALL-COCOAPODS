@@ -61,4 +61,9 @@ grep -rl "google/cloud/conversation/v1alpha/Intent.pbobjc.h"  google/** | \
 	xargs sed -i '' s@'"google\/cloud\/conversation\/v1alpha\/Intent\.pbobjc\.h"'@'\<googleapis\/Intent\.pbobjc\.h\>'@g
 grep -rl "google/cloud/conversation/v1alpha/SessionEntityType.pbobjc.h"  google/** | \
 	xargs sed -i '' s@'"google\/cloud\/conversation\/v1alpha\/SessionEntityType\.pbobjc\.h"'@'\<googleapis\/SessionEntityType\.pbobjc\.h\>'@g
-
+grep -rl "google/cloud/dialogflow/v2beta1/Document.pbobjc.h"  google/** | \
+	xargs sed -i '' s@'"google\/cloud\/dialogflow\/v2beta1\/Document\.pbobjc\.h"'@'\<googleapis\/Document\.pbobjc\.h\>'@g
+grep -rl "google/cloud/dialogflow/v2beta1/KnowledgeBase.pbobjc.h"  google/** | \
+	xargs sed -i '' s@'"google\/cloud\/dialogflow\/v2beta1\/KnowledgeBase\.pbobjc\.h"'@'\<googleapis\/KnowledgeBase\.pbobjc\.h\>'@g
+grep -rl "google/cloud/dialogflow/v2beta1/AudioConfig.pbobjc.h"  google/** | \
+	xargs sed -i '' s@'"google\/cloud\/dialogflow\/v2beta1\/AudioConfig\.pbobjc\.h"'@'\<googleapis\/AudioConfig\.pbobjc\.h\>'@g
