@@ -90,7 +90,7 @@ class StopwatchService {
       task.resume()
     }
   }
-  
+
   func streamAudioData(_ audioData: NSData, completion: @escaping StopwatchCompletionHandler) {
     if (!streaming) {
       // if we aren't already streaming, set up a gRPC connection
@@ -106,55 +106,117 @@ class StopwatchService {
                                     forKey:NSString(string:"Authorization"))
       call.start()
       streaming = true
-      
+
       // send an initial request message to configure the service
-      let queryParams = DFQueryParameters()
+
       let queryInput = DFQueryInput()
       let inputAudioConfig = DFInputAudioConfig()
       inputAudioConfig.audioEncoding = DFAudioEncoding(rawValue:1)!
       inputAudioConfig.languageCode = "en-US"
       inputAudioConfig.sampleRateHertz = Int32(sampleRate)
       queryInput.audioConfig = inputAudioConfig
-      
+
       let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
       streamingDetectIntentRequest.session = "projects/" + ProjectName +
         "/agent/sessions/" + SessionID
       streamingDetectIntentRequest.singleUtterance = true
-      streamingDetectIntentRequest.queryParams = queryParams
+      streamingDetectIntentRequest.queryParams = getQueryParmasFor()
       streamingDetectIntentRequest.queryInput = queryInput
+      streamingDetectIntentRequest.outputAudioConfig = getOutputAudioConfig()
       writer.writeValue(streamingDetectIntentRequest)
     }
-    
+
     // send a request message containing the audio data
     let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
     streamingDetectIntentRequest.inputAudio = audioData as Data
     writer.writeValue(streamingDetectIntentRequest)
   }
-  
+
   func streamText(_ userInput: String, completion: @escaping StopwatchTextCompletionHandler) {
     client = DFSessions(host:Host)
-    //send an initial request message to cinfigure the service
+    // send an initial request message to configure the service
     let queryInput = DFQueryInput()
     let inputTextConfig = DFTextInput()
     inputTextConfig.text = userInput
     inputTextConfig.languageCode = "en-US"
     queryInput.text = inputTextConfig
-    
     let detectIntentRequest = DFDetectIntentRequest()
     detectIntentRequest.session = "projects/" + ProjectName +
       "/agent/sessions/" + SessionID
     detectIntentRequest.queryInput = queryInput
-    
-    
-    call = client.rpcToDetectIntent(with: detectIntentRequest, handler: {(response, error) in completion(response, error as NSError?)
-      
+    detectIntentRequest.outputAudioConfig = getOutputAudioConfig()
+    detectIntentRequest.queryParams = getQueryParmasFor()
+    call = client.rpcToDetectIntent(with: detectIntentRequest, handler: { (response, error) in
+      completion(response, error as NSError?)
     })
-    call.requestHeaders.setObject(NSString(string: self.authorization()), forKey: NSString(string: "Authorization"))
-    
+    // authenticate using an authorization token (obtained using OAuth)
+    call.requestHeaders.setObject(NSString(string:self.authorization()),
+                                  forKey:NSString(string:"Authorization"))
     call.start()
-    
   }
-  
+
+  func getOutputAudioConfig() -> DFOutputAudioConfig? {
+    let defaults = UserDefaults.standard
+    if let defaultItems = defaults.value(forKey: Constants.selectedMenuItems) as? [Int],
+      defaultItems.count > 0 {
+      if defaultItems.contains(BetaFeatureMenu.textToSpeech.rawValue) {
+        let outputAudioConfig = DFOutputAudioConfig()
+        outputAudioConfig.audioEncoding = DFOutputAudioEncoding(rawValue:2)!
+        outputAudioConfig.sampleRateHertz = Int32(sampleRate)
+        return outputAudioConfig
+      }
+    }
+    return nil
+  }
+
+  func getSentimentAnalysisConfig(sentimentSelected: Bool) -> DFSentimentAnalysisRequestConfig {
+    let sentimentConfig = DFSentimentAnalysisRequestConfig()
+    sentimentConfig.analyzeQueryTextSentiment = sentimentSelected
+    return sentimentConfig
+  }
+
+  func getQueryParmasFor() -> DFQueryParameters {
+    let queryParams = DFQueryParameters()
+    let defaults = UserDefaults.standard
+    if let defaultItems = defaults.value(forKey: Constants.selectedMenuItems) as? [Int],
+      defaultItems.count > 0 {
+      let sentimentSelected =
+        defaultItems.contains(BetaFeatureMenu.sentimentAnalysis.rawValue)
+      queryParams.sentimentAnalysisRequestConfig = getSentimentAnalysisConfig(sentimentSelected: sentimentSelected)
+
+      if defaultItems.contains(BetaFeatureMenu.knowledgeConnector.rawValue) {
+        getKnowledgeBasePath { (knowledgeBasePath) in
+          queryParams.knowledgeBaseNamesArray = [knowledgeBasePath]
+        }
+      }
+    }else {
+      queryParams.sentimentAnalysisRequestConfig = getSentimentAnalysisConfig(sentimentSelected: false)
+    }
+    return queryParams
+  }
+
+  func getKnowledgeBasePath(handler: @escaping (_ KnowledgeBasePath: String) -> Void) {
+    let knowledgeBase = DFKnowledgeBases(host: Host)
+    let request = DFListKnowledgeBasesRequest()
+    request.parent = "projects/\(ProjectName)/agent"
+    let call = knowledgeBase.rpcToListKnowledgeBases(with: request, handler: {(knowledgeBaseRes, error) in
+      if let error = error {
+        print("Error occured while calling knowledge base api \(error.localizedDescription)")
+        return
+      }
+      if let res = knowledgeBaseRes, res.knowledgeBasesArray_Count > 0, let lastKB = res.knowledgeBasesArray.lastObject as? DFKnowledgeBase, let knowledgeBasePath = lastKB.name {
+        print("Source response for knowledge base: \(res)")
+        print("Found path:\(knowledgeBasePath)")
+        handler(knowledgeBasePath)
+      }
+    })
+    // authenticate using an authorization token (obtained using OAuth)
+    call.requestHeaders.setObject(NSString(string:self.authorization()),
+                                  forKey:NSString(string:"Authorization"))
+    call.start()
+
+  }
+
   func stopStreaming() {
     if (!streaming) {
       return
