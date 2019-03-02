@@ -39,12 +39,13 @@ grep -rl "google/type/Latlng.pbobjc.h"  google/** | \
 
 grep -rl "Annotations.pbobjc.h"  pods/** | \
 	xargs sed -i '' s@'"Annotations\.pbobjc\.h"'@'\<Firestore\/Protos\/objc\/google\/api\/Annotations\.pbobjc\.h\>'@g
-
 grep -rl "Status.pbobjc.h"  pods/** | \
 	xargs sed -i '' s@'"Status\.pbobjc\.h"'@'\<Firestore\/Protos\/objc\/google\/rpc\/Status\.pbobjc\.h\>'@g
-
 grep -rl "Latlng.pbobjc.h"  pods/** | \
 	xargs sed -i '' s@'"Latlng\.pbobjc\.h"'@'\<Firestore\/Protos\/objc\/google\/type\/Latlng\.pbobjc\.h\>'@g
+grep -rl "Document.pbobjc.h"  pods/** | \
+	xargs sed -i '' s@'"Document\.pbobjc\.h"'@'\<Firestore\/Protos\/objc\/google\/firestore\/v1\/Document\.pbobjc\.h\>'@g
+
 
 echo "Opening the project workspace in Xcode"
 open Stopwatch.xcworkspace

@@ -42,7 +42,7 @@ class DialogflowViewController: UIViewController {
   lazy var alert : UIAlertController = {
     let alert = UIAlertController(title: "Alert", message: "Please wait a moment", preferredStyle: .alert)
     return alert
-  }
+  }()
 
   @IBOutlet weak var tableView: UITableView!
   @IBOutlet weak var optionsCard: MDCCard!
@@ -110,12 +110,13 @@ class DialogflowViewController: UIViewController {
 
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    self.present(alert!, animated: true, completion: nil)
+    self.present(alert, animated: true, completion: nil)
   }
 
   func dismissAlert() {
     print("Dismissing alert view as have received token and good to go")
-    alert?.dismiss(animated: true, completion: nil)
+    alert.dismiss(animated: true, completion: nil)
+  }
     
   @objc func presentNavigationDrawer() {
     let bottomDrawerViewController = MDCBottomDrawerViewController()
