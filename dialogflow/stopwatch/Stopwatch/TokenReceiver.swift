@@ -40,14 +40,4 @@ class TokenReceiver {
     }
   }
 
-  //This function compares token expiry date with current date
-  //Returns bool value true if token is expired else false
-  fileprivate func isExpired(expDate: String) -> Bool {
-    var expired = true
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-    guard let expiryDate = dateFormatter.date(from: expDate) else {return expired}
-    expired = (Date() > expiryDate)
-    return expired
-  }
 }
