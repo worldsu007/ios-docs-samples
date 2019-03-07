@@ -53,7 +53,7 @@ If you have not already done so, [enable Dialogflow for your project](https://cl
  
  - Go to your project root directory, and run the command “firebase init functions”.
  - A functions folder would be created and will have index.js file.
- - Replace index.js file with (The node repo link pointing to index.js file or Documentation code link).
+ - Replace index.js file with (https://github.com/santhoshvaddi/nodejs-docs-samples/pull/1/files).
  - Open index.js, go to function generateAccessToken, and replace “SERVICE-ACCOUNT-NAME@YOUR_PROJECT_ID.iam.gserviceaccount.com” with your Service account name and project id. Make sure that your IAM "App Engine Default Service Account" has "Service Account Token Creator" Role.
  - Deploy getOAuthToken method by running command: “firebase deploy —only functions”.
  - For more info please refer (https://firebase.google.com/docs/functions/get-started).
