@@ -17,9 +17,10 @@ import Foundation
 import googleapis
 
 let Host = "dialogflow.googleapis.com"
-let ProjectName = "your-project-identifier" // UPDATE THIS
+// TODO: Replace with your GCP PROJECT_ID
+let ProjectName = "your-project-identifier"
 let SessionID = "001"
-let SampleRate = 16000
+let SampleRate = 16000 //Sample rate (in Hertz) of the audio content sent in the query.
 
 typealias StopwatchCompletionHandler =
   (DFStreamingDetectIntentResponse?, NSError?) -> (Void)

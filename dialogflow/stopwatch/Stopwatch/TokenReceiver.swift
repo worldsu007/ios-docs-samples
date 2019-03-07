@@ -20,15 +20,13 @@ import Firebase
 class TokenReceiver {
 
   public static let sharedInstance = TokenReceiver()
-  public func retrieveAccessTokenFor(uid: String, completionHandler: @escaping (String?, Error?) -> Void) {
+  public func retrieveAccessToken(completionHandler: @escaping (String?, Error?) -> Void) {
     Functions.functions().httpsCallable("getOAuthToken").call { (result, error) in
       if error != nil {
-        print("error description \(error?.localizedDescription ?? "no description available")")
         completionHandler(nil, error)
         return
       }
       guard let res: HTTPSCallableResult = result else {
-        print("result found nil")
         completionHandler(nil, "Result found nil" as? Error)
         return
       }
@@ -36,8 +34,6 @@ class TokenReceiver {
       if let accessToken = tokenData["accessToken"] as? String, !accessToken.isEmpty {
         completionHandler(accessToken, nil)
       }
-      print("result = \(String(describing: tokenData))")
     }
   }
-
 }

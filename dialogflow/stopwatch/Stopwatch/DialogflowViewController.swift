@@ -40,7 +40,7 @@ class DialogflowViewController: UIViewController {
   let intentTextFieldController: MDCTextInputControllerOutlined
   var tableViewDataSource = [[String: String]]()
   lazy var alert : UIAlertController = {
-    let alert = UIAlertController(title: "Alert", message: "Please wait a moment", preferredStyle: .alert)
+    let alert = UIAlertController(title: "Alert", message: "Retrieving token ...", preferredStyle: .alert)
     return alert
   }()
 
@@ -114,7 +114,6 @@ class DialogflowViewController: UIViewController {
   }
 
   func dismissAlert() {
-    print("Dismissing alert view as have received token and good to go")
     alert.dismiss(animated: true, completion: nil)
   }
     
@@ -207,7 +206,6 @@ extension DialogflowViewController: AudioControllerDelegate {
     listening = true
     optionsCard.isHidden = true
     cancelButton.isHidden = false
-    
     let audioSession = AVAudioSession.sharedInstance()
     do {
       try audioSession.setCategory(AVAudioSessionCategoryRecord)

@@ -20,21 +20,22 @@ import Firebase
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
-  var hasRequestedForToken = false
-  func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions:[UIApplicationLaunchOptionsKey :Any]? = nil) -> Bool {
+  func application(_ application: UIApplication,
+                   didFinishLaunchingWithOptions launchOptions:[UIApplicationLaunchOptionsKey :Any]? = nil) -> Bool {
+    // Use Firebase library to configure APIs
     FirebaseApp.configure()
-    generateAccessToken()
+    retrieveAccessToken()
     return true
   }
   
-  func generateAccessToken() {
-    //Block the UI/ show a pop up message / a diff screen
-    Auth.auth().signInAnonymously() { (authResult, error) in let user = authResult?.user
-      guard let uid = user?.uid else {
+  func retrieveAccessToken() {
+    //this sample uses Firebase Auth signInAnonymously and you can insert any auth signin that they offer.
+    Auth.auth().signInAnonymously() { (authResult, error) in
+      if error != nil {
+        //Sign in failed
         return
       }
-      print("UID: \(uid)")
-      TokenReceiver.sharedInstance.retrieveAccessTokenFor(uid: uid, completionHandler: {(token, error) in
+      TokenReceiver.sharedInstance.retrieveAccessToken(completionHandler: {(token, error) in
         if token != nil {
           StopwatchService.sharedInstance.token = token!
           NotificationCenter.default.post(name: NSNotification.Name("TokenReceived"), object: nil)
