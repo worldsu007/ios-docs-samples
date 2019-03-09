@@ -17,6 +17,14 @@
 import Foundation
 import Firebase
 
+extension Constants {
+  static let token = "Token"
+  static let accessToken = "accessToken"
+  static let expireTime = "expireTime"
+  static let tokenReceived = "tokenReceived"
+  static let retreivingToken = "RetrievingToken"
+}
+
 class TokenReceiver {
 
   public static let sharedInstance = TokenReceiver()
@@ -31,9 +39,47 @@ class TokenReceiver {
         return
       }
       guard let tokenData = res.data as? [String: Any] else {return}
-      if let accessToken = tokenData["accessToken"] as? String, !accessToken.isEmpty {
+      UserDefaults.standard.set(tokenData, forKey: Constants.token)
+      if let accessToken = tokenData[Constants.accessToken] as? String, !accessToken.isEmpty {
         completionHandler(accessToken, nil)
       }
     }
   }
+  
+  //This function compares token expiry date with current date
+  //Returns bool value True if the token is expired else false
+  static func isExpired(expDate: String) -> Bool {
+    var expired = true
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+    guard let expiryDate = dateFormatter.date(from: expDate) else {return expired}
+    expired = (Date() > expiryDate)
+    return expired
+  }
+
+  static func checkIfTokenExpired() -> Bool {
+    guard let token = UserDefaults.standard.value(forKey: Constants.token) as? [String: String],
+      let expiryTime = token[Constants.expireTime] else {
+        return true
+    }
+    return isExpired(expDate: expiryTime)
+  }
+
+  static func getToken(completionHandler: @escaping (String)->Void) {
+    if checkIfTokenExpired() {
+      guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+        return completionHandler("")
+      }
+      appDelegate.retrieveAccessToken { (result) in
+        completionHandler(result)
+      }
+    } else {
+      guard let token = UserDefaults.standard.value(forKey: Constants.token) as? [String: String],
+        let accessToken = token[Constants.accessToken] else {
+          return completionHandler("")
+      }
+      return completionHandler(accessToken)
+    }
+  }
+
 }

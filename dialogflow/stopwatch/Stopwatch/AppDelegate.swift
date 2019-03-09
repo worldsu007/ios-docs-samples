@@ -24,21 +24,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                    didFinishLaunchingWithOptions launchOptions:[UIApplicationLaunchOptionsKey :Any]? = nil) -> Bool {
     // Use Firebase library to configure APIs
     FirebaseApp.configure()
-    retrieveAccessToken()
     return true
   }
   
-  func retrieveAccessToken() {
+  func retrieveAccessToken(completionHandler: ((String) -> Void)? = nil) {
+    NotificationCenter.default.post(name: NSNotification.Name(Constants.retreivingToken), object: nil)
     //this sample uses Firebase Auth signInAnonymously and you can insert any auth signin that they offer.
     Auth.auth().signInAnonymously() { (authResult, error) in
       if error != nil {
         //Sign in failed
+        completionHandler?("")
         return
       }
       TokenReceiver.sharedInstance.retrieveAccessToken(completionHandler: {(token, error) in
-        if token != nil {
-          StopwatchService.sharedInstance.token = token!
-          NotificationCenter.default.post(name: NSNotification.Name("TokenReceived"), object: nil)
+        if let token = token {
+          NotificationCenter.default.post(name: NSNotification.Name(Constants.tokenReceived), object: nil)
+          completionHandler?(token)
+        } else {
+          completionHandler?("")
         }
       })
     }

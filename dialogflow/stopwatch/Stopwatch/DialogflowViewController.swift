@@ -74,7 +74,8 @@ class DialogflowViewController: UIViewController {
     setUpNavigationBarAndItems()
     registerKeyboardNotifications()
     //Register for notification
-    NotificationCenter.default.addObserver(self, selector: #selector(dismissAlert), name: NSNotification.Name("TokenReceived"), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(dismissAlert), name: NSNotification.Name(Constants.tokenReceived), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(presentAlert), name: NSNotification.Name(Constants.retreivingToken), object: nil)
     //Audio Controller initialization
     AudioController.sharedInstance.delegate = self
     optionsCard.cornerRadius = optionsCard.frame.height/2
@@ -108,15 +109,17 @@ class DialogflowViewController: UIViewController {
 
   }
 
-  override func viewDidAppear(_ animated: Bool) {
-    super.viewDidAppear(animated)
-    self.present(alert, animated: true, completion: nil)
+  func presentAlert() {
+    //Showing the alert until token is received
+    if alert.isViewLoaded == false {
+      self.present(alert, animated: true, completion: nil)
+    }
   }
-
+  
   func dismissAlert() {
     alert.dismiss(animated: true, completion: nil)
   }
-    
+
   @objc func presentNavigationDrawer() {
     let bottomDrawerViewController = MDCBottomDrawerViewController()
     bottomDrawerViewController.setTopCornersRadius(24, for: .collapsed)
@@ -206,14 +209,14 @@ extension DialogflowViewController: AudioControllerDelegate {
     listening = true
     optionsCard.isHidden = true
     cancelButton.isHidden = false
-    let audioSession = AVAudioSession.sharedInstance()
-    do {
-      try audioSession.setCategory(AVAudioSessionCategoryRecord)
-    } catch {
-      
-    }
+//    let audioSession = AVAudioSession.sharedInstance()
+//    do {
+//      try audioSession.setCategory(AVAudioSessionCategoryRecord)
+//    } catch {
+//
+//    }
     audioData = NSMutableData()
-    _ = AudioController.sharedInstance.prepare(specifiedSampleRate: SampleRate)
+   _ = AudioController.sharedInstance.prepare(specifiedSampleRate: SampleRate)
     
     StopwatchService.sharedInstance.sampleRate = SampleRate
     _ = AudioController.sharedInstance.start()
@@ -250,11 +253,6 @@ extension DialogflowViewController: AudioControllerDelegate {
           if let error = error, !error.localizedDescription.isEmpty {
             strongSelf.handleError(error: error)
           } else if let response = response {
-            print(response)
-            print(response.recognitionResult.transcript)
-            print("-----------------------")
-            print("Sentiment analysis score:\(response.queryResult.sentimentAnalysisResult.queryTextSentiment.score)")
-            print("Sentiment analysis magnitude:\(response.queryResult.sentimentAnalysisResult.queryTextSentiment.magnitude)")
             if !response.recognitionResult.transcript.isEmpty {
               if strongSelf.isFirst{
                 strongSelf.tableViewDataSource.append([selfKey: response.recognitionResult.transcript])
@@ -303,7 +301,7 @@ extension DialogflowViewController: AudioControllerDelegate {
 
 // MARK: - Keyboard Handling
 extension DialogflowViewController {
-    
+
   func registerKeyboardNotifications() {
     NotificationCenter.default.addObserver(
       self,
@@ -317,14 +315,14 @@ extension DialogflowViewController {
       name: NSNotification.Name.UIKeyboardWillHide,
       object: nil)
   }
-    
+
   @objc func keyboardWillShow(notification: NSNotification) {
     let keyboardFrame =
       (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
     textFieldBottomConstraint.constant = -keyboardFrame.height
 
   }
-    
+
   @objc func keyboardWillHide(notification: NSNotification) {
     textFieldBottomConstraint.constant = 0
     intentTextField.isHidden = true
@@ -355,15 +353,11 @@ extension DialogflowViewController: UITextFieldDelegate {
 
         strongSelf.handleError(error: error)
       } else if let response = response {
-        print(response)
         if response.hasOutputAudioConfig {
           if let audioOutput = response.outputAudio {
             self?.audioPlayerFor(audioData: audioOutput)
           }
         }
-        print("-----------------------")
-        print("Sentiment analysis score:\(response.queryResult.sentimentAnalysisResult.queryTextSentiment.score)")
-        print("Sentiment analysis magnitude:\(response.queryResult.sentimentAnalysisResult.queryTextSentiment.magnitude)")
         if !response.queryResult.queryText.isEmpty {
           strongSelf.tableViewDataSource.append([selfKey: response.queryResult.queryText])
           strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)

@@ -41,85 +41,84 @@ class StopwatchService {
   private var writer : GRXBufferedPipe!
   private var call : GRPCProtoCall!
 
-  var token : String! {
-    didSet {
-      NotificationCenter.default.post(name: Notification.Name("TokenReceived"), object: nil, userInfo: nil)
-
-    }
-  }
-
   static let sharedInstance = StopwatchService()
 
-  func authorization() -> String {
-    if self.token != nil {
-      return "Bearer " + self.token
-    } else {
-      return "No token is available"
+  func authorization(completionHandler: @escaping (String)-> Void) {
+    TokenReceiver.getToken { (token) in
+      if !token.isEmpty {
+        completionHandler("Bearer " + token)
+      } else {
+        completionHandler("No token is available")
+      }
     }
   }
 
   func streamAudioData(_ audioData: NSData, completion: @escaping StopwatchCompletionHandler) {
-    if (!streaming) {
-      // if we aren't already streaming, set up a gRPC connection
-      client = DFSessions(host:Host)
-      writer = GRXBufferedPipe()
-      call = client.rpcToStreamingDetectIntent(
-        withRequestsWriter: writer,
-        eventHandler: { (done, response, error) in
-          completion(response, error as NSError?)
-      })
-      // authenticate using an authorization token (obtained using OAuth)
-      call.requestHeaders.setObject(NSString(string:self.authorization()),
-                                    forKey:NSString(string:"Authorization"))
-      call.start()
-      streaming = true
+    // authenticate using an authorization token (obtained using OAuth)
+    authorization { (authT) in
+      if (!self.streaming) {
+        // if we aren't already streaming, set up a gRPC connection
+        self.client = DFSessions(host:Host)
+        self.writer = GRXBufferedPipe()
+        self.call = self.client.rpcToStreamingDetectIntent(
+          withRequestsWriter: self.writer,
+          eventHandler: { (done, response, error) in
+            completion(response, error as NSError?)
+        })
+        self.call.requestHeaders.setObject(NSString(string:authT),
+                                           forKey:NSString(string:"Authorization"))
+        self.call.start()
+        self.streaming = true
 
-      // send an initial request message to configure the service
+        // send an initial request message to configure the service
 
-      let queryInput = DFQueryInput()
-      let inputAudioConfig = DFInputAudioConfig()
-      inputAudioConfig.audioEncoding = DFAudioEncoding(rawValue:1)!
-      inputAudioConfig.languageCode = "en-US"
-      inputAudioConfig.sampleRateHertz = Int32(sampleRate)
-      queryInput.audioConfig = inputAudioConfig
+        let queryInput = DFQueryInput()
+        let inputAudioConfig = DFInputAudioConfig()
+        inputAudioConfig.audioEncoding = DFAudioEncoding(rawValue:1)!
+        inputAudioConfig.languageCode = "en-US"
+        inputAudioConfig.sampleRateHertz = Int32(self.sampleRate)
+        queryInput.audioConfig = inputAudioConfig
 
+        let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
+        streamingDetectIntentRequest.session = "projects/" + ProjectName +
+          "/agent/sessions/" + SessionID
+        streamingDetectIntentRequest.singleUtterance = true
+        streamingDetectIntentRequest.queryParams = self.getQueryParmasFor()
+        streamingDetectIntentRequest.queryInput = queryInput
+        streamingDetectIntentRequest.outputAudioConfig = self.getOutputAudioConfig()
+        self.writer.writeValue(streamingDetectIntentRequest)
+      }
+
+      // send a request message containing the audio data
       let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
-      streamingDetectIntentRequest.session = "projects/" + ProjectName +
-        "/agent/sessions/" + SessionID
-      streamingDetectIntentRequest.singleUtterance = true
-      streamingDetectIntentRequest.queryParams = getQueryParmasFor()
-      streamingDetectIntentRequest.queryInput = queryInput
-      streamingDetectIntentRequest.outputAudioConfig = getOutputAudioConfig()
-      writer.writeValue(streamingDetectIntentRequest)
+      streamingDetectIntentRequest.inputAudio = audioData as Data
+      self.writer.writeValue(streamingDetectIntentRequest)
     }
-
-    // send a request message containing the audio data
-    let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
-    streamingDetectIntentRequest.inputAudio = audioData as Data
-    writer.writeValue(streamingDetectIntentRequest)
   }
 
   func streamText(_ userInput: String, completion: @escaping StopwatchTextCompletionHandler) {
-    client = DFSessions(host:Host)
-    // send an initial request message to configure the service
-    let queryInput = DFQueryInput()
-    let inputTextConfig = DFTextInput()
-    inputTextConfig.text = userInput
-    inputTextConfig.languageCode = "en-US"
-    queryInput.text = inputTextConfig
-    let detectIntentRequest = DFDetectIntentRequest()
-    detectIntentRequest.session = "projects/" + ProjectName +
-      "/agent/sessions/" + SessionID
-    detectIntentRequest.queryInput = queryInput
-    detectIntentRequest.outputAudioConfig = getOutputAudioConfig()
-    detectIntentRequest.queryParams = getQueryParmasFor()
-    call = client.rpcToDetectIntent(with: detectIntentRequest, handler: { (response, error) in
-      completion(response, error as NSError?)
-    })
     // authenticate using an authorization token (obtained using OAuth)
-    call.requestHeaders.setObject(NSString(string:self.authorization()),
-                                  forKey:NSString(string:"Authorization"))
-    call.start()
+    authorization { (authT) in
+      self.client = DFSessions(host:Host)
+      // send an initial request message to configure the service
+      let queryInput = DFQueryInput()
+      let inputTextConfig = DFTextInput()
+      inputTextConfig.text = userInput
+      inputTextConfig.languageCode = "en-US"
+      queryInput.text = inputTextConfig
+      let detectIntentRequest = DFDetectIntentRequest()
+      detectIntentRequest.session = "projects/" + ProjectName +
+        "/agent/sessions/" + SessionID
+      detectIntentRequest.queryInput = queryInput
+      detectIntentRequest.outputAudioConfig = self.getOutputAudioConfig()
+      detectIntentRequest.queryParams = self.getQueryParmasFor()
+      self.call = self.client.rpcToDetectIntent(with: detectIntentRequest, handler: { (response, error) in
+        completion(response, error as NSError?)
+      })
+      self.call.requestHeaders.setObject(NSString(string:authT),
+                                         forKeyedSubscript:NSString(string:"Authorization"))
+      self.call.start()
+    }
   }
 
   func getOutputAudioConfig() -> DFOutputAudioConfig? {
@@ -163,25 +162,29 @@ class StopwatchService {
   }
 
   func getKnowledgeBasePath(handler: @escaping (_ KnowledgeBasePath: String) -> Void) {
-    let knowledgeBase = DFKnowledgeBases(host: Host)
-    let request = DFListKnowledgeBasesRequest()
-    request.parent = "projects/\(ProjectName)/agent"
-    let call = knowledgeBase.rpcToListKnowledgeBases(with: request, handler: {(knowledgeBaseRes, error) in
-      if let error = error {
-        print("Error occured while calling knowledge base api \(error.localizedDescription)")
-        return
-      }
-      if let res = knowledgeBaseRes, res.knowledgeBasesArray_Count > 0, let lastKB = res.knowledgeBasesArray.lastObject as? DFKnowledgeBase, let knowledgeBasePath = lastKB.name {
-        print("Source response for knowledge base: \(res)")
-        print("Found path:\(knowledgeBasePath)")
-        handler(knowledgeBasePath)
-      }
-    })
     // authenticate using an authorization token (obtained using OAuth)
-    call.requestHeaders.setObject(NSString(string:self.authorization()),
-                                  forKey:NSString(string:"Authorization"))
-    call.start()
-
+    authorization { (authT) in
+      let knowledgeBase = DFKnowledgeBases(host: Host)
+      let request = DFListKnowledgeBasesRequest()
+      request.parent = "projects/\(ProjectName)/agent"
+      let call = knowledgeBase.rpcToListKnowledgeBases(with: request, handler: {(knowledgeBaseRes, error) in
+        if let error = error {
+          print("Error occured while calling knowledge base api \(error.localizedDescription)")
+          return
+        }
+        if let res = knowledgeBaseRes,
+          res.knowledgeBasesArray_Count > 0,
+          let lastKB = res.knowledgeBasesArray.lastObject as? DFKnowledgeBase,
+          let knowledgeBasePath = lastKB.name {
+          print("Source response for knowledge base: \(res)")
+          print("Found path:\(knowledgeBasePath)")
+          handler(knowledgeBasePath)
+        }
+      })
+      call.requestHeaders.setObject(NSString(string:authT),
+                                    forKey:NSString(string:"Authorization"))
+      call.start()
+    }
   }
 
   func stopStreaming() {
@@ -196,5 +199,5 @@ class StopwatchService {
     return streaming
   }
 }
-  
+
 
