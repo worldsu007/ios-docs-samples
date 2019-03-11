@@ -39,6 +39,10 @@ class DialogflowViewController: UIViewController {
   var  textFieldBottomConstraint: NSLayoutConstraint!
   let intentTextFieldController: MDCTextInputControllerOutlined
   var tableViewDataSource = [[String: String]]()
+  lazy var alert : UIAlertController = {
+    let alert = UIAlertController(title: "Alert", message: "Retrieving token ...", preferredStyle: .alert)
+    return alert
+  }()
 
   @IBOutlet weak var tableView: UITableView!
   @IBOutlet weak var optionsCard: MDCCard!
@@ -47,11 +51,14 @@ class DialogflowViewController: UIViewController {
   @IBOutlet weak var cancelButton: UIButton!
   var avPlayer: AVAudioPlayer?
 
+
+  //init with nib name
   override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
     intentTextFieldController = MDCTextInputControllerOutlined(textInput: intentTextField)
     super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     intentTextFieldController.placeholderText = "Type your intent"
   }
+
   //init with coder
   required init?(coder aDecoder: NSCoder) {
     intentTextFieldController = MDCTextInputControllerOutlined(textInput: intentTextField)
@@ -66,22 +73,11 @@ class DialogflowViewController: UIViewController {
     self.title = "Dialogflow Sample"
     setUpNavigationBarAndItems()
     registerKeyboardNotifications()
+    //Register for notification
+    NotificationCenter.default.addObserver(self, selector: #selector(dismissAlert), name: NSNotification.Name(Constants.tokenReceived), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(presentAlert), name: NSNotification.Name(Constants.retreivingToken), object: nil)
     //Audio Controller initialization
     AudioController.sharedInstance.delegate = self
-    StopwatchService.sharedInstance.fetchToken {(error) in
-      if let error = error {
-        DispatchQueue.main.async { [unowned self] in
-          self.tableViewDataSource.append([botKey: "Error: \(error)\n\nBe sure that you have a valid credentials.json in your app and a working network connection."])
-          self.tableView.reloadData()
-          self.tableView.scrollToBottom()
-        }
-      } else {
-        DispatchQueue.main.async { [unowned self] in
-          self.audioButton.isEnabled = true
-        }
-      }
-    }
-
     optionsCard.cornerRadius = optionsCard.frame.height/2
     self.view.addSubview(intentTextField)
     intentTextField.isHidden = true
@@ -113,6 +109,17 @@ class DialogflowViewController: UIViewController {
 
   }
 
+  func presentAlert() {
+    //Showing the alert until token is received
+    if alert.isViewLoaded == false {
+      self.present(alert, animated: true, completion: nil)
+    }
+  }
+  
+  func dismissAlert() {
+    alert.dismiss(animated: true, completion: nil)
+  }
+
   @objc func presentNavigationDrawer() {
     let bottomDrawerViewController = MDCBottomDrawerViewController()
     bottomDrawerViewController.setTopCornersRadius(24, for: .collapsed)
@@ -135,7 +142,7 @@ class DialogflowViewController: UIViewController {
   }
 
   func setUpNavigationBarAndItems() {
-    // AppBar Init
+    //Initialize and add AppBar
     self.addChildViewController(appBar.headerViewController)
     self.appBar.headerViewController.headerView.trackingScrollView = tableView
     appBar.addSubviewsToParent()
@@ -202,15 +209,15 @@ extension DialogflowViewController: AudioControllerDelegate {
     listening = true
     optionsCard.isHidden = true
     cancelButton.isHidden = false
-    let audioSession = AVAudioSession.sharedInstance()
-    do {
-      try audioSession.setCategory(AVAudioSessionCategoryRecord)
-    } catch {
-
-    }
+//    let audioSession = AVAudioSession.sharedInstance()
+//    do {
+//      try audioSession.setCategory(AVAudioSessionCategoryRecord)
+//    } catch {
+//
+//    }
     audioData = NSMutableData()
-    _ = AudioController.sharedInstance.prepare(specifiedSampleRate: SampleRate)
-
+   _ = AudioController.sharedInstance.prepare(specifiedSampleRate: SampleRate)
+    
     StopwatchService.sharedInstance.sampleRate = SampleRate
     _ = AudioController.sharedInstance.start()
   }
@@ -246,11 +253,6 @@ extension DialogflowViewController: AudioControllerDelegate {
           if let error = error, !error.localizedDescription.isEmpty {
             strongSelf.handleError(error: error)
           } else if let response = response {
-            print(response)
-            print(response.recognitionResult.transcript)
-            print("-----------------------")
-            print("Sentiment analysis score:\(response.queryResult.sentimentAnalysisResult.queryTextSentiment.score)")
-            print("Sentiment analysis magnitude:\(response.queryResult.sentimentAnalysisResult.queryTextSentiment.magnitude)")
             if !response.recognitionResult.transcript.isEmpty {
               if strongSelf.isFirst{
                 strongSelf.tableViewDataSource.append([selfKey: response.recognitionResult.transcript])
@@ -341,6 +343,7 @@ extension DialogflowViewController: UITextFieldDelegate {
     return true
   }
 
+  //Start sending text
   func sendTextToDialogflow(text: String) {
     StopwatchService.sharedInstance.streamText(text, completion: { [weak self] (response, error) in
       guard let strongSelf = self else {
@@ -350,15 +353,11 @@ extension DialogflowViewController: UITextFieldDelegate {
 
         strongSelf.handleError(error: error)
       } else if let response = response {
-        print(response)
         if response.hasOutputAudioConfig {
           if let audioOutput = response.outputAudio {
             self?.audioPlayerFor(audioData: audioOutput)
           }
         }
-        print("-----------------------")
-        print("Sentiment analysis score:\(response.queryResult.sentimentAnalysisResult.queryTextSentiment.score)")
-        print("Sentiment analysis magnitude:\(response.queryResult.sentimentAnalysisResult.queryTextSentiment.magnitude)")
         if !response.queryResult.queryText.isEmpty {
           strongSelf.tableViewDataSource.append([selfKey: response.queryResult.queryText])
           strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.tableViewDataSource.count - 1, section: 0)], with: .automatic)
