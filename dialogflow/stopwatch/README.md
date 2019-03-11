@@ -44,17 +44,19 @@ If you have not already done so, [enable Dialogflow for your project](https://cl
 
  - You'll need a Node.js environment to write functions, and you'll need the Firebase CLI (which also requires Node.js and npm) to deploy functions to the Cloud Functions runtime.
  - For installing Node.js and npm, Node Version Manager is recommended. Once you have Node.js and npm installed, install the Firebase CLI via npm:
- - To install or upgrade the CLI run the following npm command: "npm install -g firebase-tools" from your terminal.
+ - To install or upgrade the CLI run the following npm command: "sudo npm install -g firebase-tools" from your terminal.
  - To verify that the CLI has been installed correctly, open a console and run: "firebase --version".
  - Authorize the Firebase CLI by running: "firebase login"
- - Make sure you are in the project directory then set up the Firebase CLI to use your Firebase Project: "firebase use --add" Then select your Project ID and follow the instructions.
  
  ## Authentication
  
- - Go to your project root directory, and run the command “firebase init functions”.
- - A functions folder would be created and will have index.js file.
- - Replace index.js file with (https://github.com/santhoshvaddi/nodejs-docs-samples/pull/1/files).
- - Open index.js, go to function generateAccessToken, and replace “SERVICE-ACCOUNT-NAME@YOUR_PROJECT_ID.iam.gserviceaccount.com” with your Service account name and project id. Make sure that your IAM "App Engine Default Service Account" has "Service Account Token Creator" Role.
+ - Go to your project root directory "stopwatch" folder and run the command “firebase init functions”.
+ - Select associated firebase project.
+ - Select language as "javascript" from the dropdown menu.
+ - Select Y to install dependencies with npm.
+ - A functions folder would be created under the "stopwatch" folder and will have index.js file.
+ - Replace index.js file with (https://github.com/GoogleCloudPlatform/nodejs-docs-samples/blob/16dbb6c7b941c08370bc135bef5049fba67ecd28/functions/dialogflow/functions/index.js).
+ - Open index.js, go to function "generateAccessToken", and replace “SERVICE-ACCOUNT-NAME@YOUR_PROJECT_ID.iam.gserviceaccount.com” with your Service account name and project id. Make sure that your IAM "App Engine Default Service Account" has "Service Account Token Creator" Role.
  - Deploy getOAuthToken method by running command: “firebase deploy —only functions”.
  - For more info please refer (https://firebase.google.com/docs/functions/get-started).
 

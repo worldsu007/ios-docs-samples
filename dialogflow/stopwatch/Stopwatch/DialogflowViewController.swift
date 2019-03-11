@@ -209,15 +209,8 @@ extension DialogflowViewController: AudioControllerDelegate {
     listening = true
     optionsCard.isHidden = true
     cancelButton.isHidden = false
-//    let audioSession = AVAudioSession.sharedInstance()
-//    do {
-//      try audioSession.setCategory(AVAudioSessionCategoryRecord)
-//    } catch {
-//
-//    }
     audioData = NSMutableData()
-   _ = AudioController.sharedInstance.prepare(specifiedSampleRate: SampleRate)
-    
+    _ = AudioController.sharedInstance.prepare(specifiedSampleRate: SampleRate)
     StopwatchService.sharedInstance.sampleRate = SampleRate
     _ = AudioController.sharedInstance.start()
   }
