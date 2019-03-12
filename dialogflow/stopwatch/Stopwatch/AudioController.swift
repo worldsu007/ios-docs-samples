@@ -37,7 +37,11 @@ class AudioController {
 
     let session = AVAudioSession.sharedInstance()
     do {
-      try session.setCategory(AVAudioSessionCategoryRecord)
+      if #available(iOS 10.0, *) {
+        try session.setCategory(AVAudioSession.Category.record, mode: AVAudioSession.Mode.spokenAudio)
+      } else {
+        // Fallback on earlier versions
+      }
       try session.setPreferredIOBufferDuration(10)
     } catch {
       return -1
@@ -160,4 +164,9 @@ func recordingCallback(
   }
 
   return noErr
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromAVAudioSessionCategory(_ input: AVAudioSession.Category) -> String {
+	return input.rawValue
 }

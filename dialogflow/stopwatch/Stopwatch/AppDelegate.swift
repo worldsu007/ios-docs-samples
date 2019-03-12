@@ -21,7 +21,7 @@ import Firebase
 class AppDelegate: UIResponder, UIApplicationDelegate {
   var window: UIWindow?
   func application(_ application: UIApplication,
-                   didFinishLaunchingWithOptions launchOptions:[UIApplicationLaunchOptionsKey :Any]? = nil) -> Bool {
+                   didFinishLaunchingWithOptions launchOptions:[UIApplication.LaunchOptionsKey :Any]? = nil) -> Bool {
     // Use Firebase library to configure APIs
     FirebaseApp.configure()
     return true

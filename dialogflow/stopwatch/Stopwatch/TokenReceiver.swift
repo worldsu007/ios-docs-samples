@@ -48,25 +48,21 @@ class TokenReceiver {
   
   //This function compares token expiry date with current date
   //Returns bool value True if the token is expired else false
-  static func isExpired(expDate: String) -> Bool {
-    var expired = true
-    let dateFormatter = DateFormatter()
-    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
-    guard let expiryDate = dateFormatter.date(from: expDate) else {return expired}
-    expired = (Date() > expiryDate)
-    return expired
-  }
-
-  static func checkIfTokenExpired() -> Bool {
+  static func isExpired() -> Bool {
     guard let token = UserDefaults.standard.value(forKey: Constants.token) as? [String: String],
-      let expiryTime = token[Constants.expireTime] else {
+      let expDate = token[Constants.expireTime] else{
         return true
     }
-    return isExpired(expDate: expiryTime)
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+    guard let expiryDate = dateFormatter.date(from: expDate) else {
+      return true
+    }
+    return (Date() > expiryDate)
   }
 
   static func getToken(completionHandler: @escaping (String)->Void) {
-    if checkIfTokenExpired() {
+    if isExpired() {
       guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
         return completionHandler("")
       }

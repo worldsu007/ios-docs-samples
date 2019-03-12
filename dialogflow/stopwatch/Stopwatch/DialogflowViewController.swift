@@ -109,14 +109,14 @@ class DialogflowViewController: UIViewController {
 
   }
 
-  func presentAlert() {
+  @objc func presentAlert() {
     //Showing the alert until token is received
     if alert.isViewLoaded == false {
       self.present(alert, animated: true, completion: nil)
     }
   }
   
-  func dismissAlert() {
+  @objc func dismissAlert() {
     alert.dismiss(animated: true, completion: nil)
   }
 
@@ -143,7 +143,7 @@ class DialogflowViewController: UIViewController {
 
   func setUpNavigationBarAndItems() {
     //Initialize and add AppBar
-    self.addChildViewController(appBar.headerViewController)
+    self.addChild(appBar.headerViewController)
     self.appBar.headerViewController.headerView.trackingScrollView = tableView
     appBar.addSubviewsToParent()
     let barButtonLeadingItem = UIBarButtonItem()
@@ -299,19 +299,19 @@ extension DialogflowViewController {
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(self.keyboardWillShow),
-      name: NSNotification.Name.UIKeyboardDidShow,
+      name: UIResponder.keyboardDidShowNotification,
       object: nil)
 
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(self.keyboardWillHide),
-      name: NSNotification.Name.UIKeyboardWillHide,
+      name: UIResponder.keyboardWillHideNotification,
       object: nil)
   }
 
   @objc func keyboardWillShow(notification: NSNotification) {
     let keyboardFrame =
-      (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
+      (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as! NSValue).cgRectValue
     textFieldBottomConstraint.constant = -keyboardFrame.height
 
   }
