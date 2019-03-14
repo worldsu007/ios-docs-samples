@@ -17,19 +17,11 @@
 import Foundation
 import Firebase
 
-extension Constants {
-  static let token = "Token"
-  static let accessToken = "accessToken"
-  static let expireTime = "expireTime"
-  static let tokenReceived = "tokenReceived"
-  static let retreivingToken = "RetrievingToken"
-}
-
 class TokenReceiver {
-
   public static let sharedInstance = TokenReceiver()
+  //This func retrieves tokens from index.js
   public func retrieveAccessToken(completionHandler: @escaping (String?, Error?) -> Void) {
-    Functions.functions().httpsCallable("getOAuthToken").call { (result, error) in
+    Functions.functions().httpsCallable(ApplicationConstants.getTokenAPI).call { (result, error) in
       if error != nil {
         completionHandler(nil, error)
         return
@@ -39,8 +31,8 @@ class TokenReceiver {
         return
       }
       guard let tokenData = res.data as? [String: Any] else {return}
-      UserDefaults.standard.set(tokenData, forKey: Constants.token)
-      if let accessToken = tokenData[Constants.accessToken] as? String, !accessToken.isEmpty {
+      UserDefaults.standard.set(tokenData, forKey: ApplicationConstants.token)
+      if let accessToken = tokenData[ApplicationConstants.accessToken] as? String, !accessToken.isEmpty {
         completionHandler(accessToken, nil)
       }
     }
@@ -49,8 +41,8 @@ class TokenReceiver {
   //This function compares token expiry date with current date
   //Returns bool value True if the token is expired else false
   static func isExpired() -> Bool {
-    guard let token = UserDefaults.standard.value(forKey: Constants.token) as? [String: String],
-      let expDate = token[Constants.expireTime] else{
+    guard let token = UserDefaults.standard.value(forKey: ApplicationConstants.token) as? [String: String],
+      let expDate = token[ApplicationConstants.expireTime] else{
         return true
     }
     let dateFormatter = DateFormatter()
@@ -61,6 +53,9 @@ class TokenReceiver {
     return (Date() > expiryDate)
   }
 
+  //Return token from user defaults if token is there and not expired.
+  //Request for new token if token is expired or not there in user defaults.
+  //Return the newly generated token.
   static func getToken(completionHandler: @escaping (String)->Void) {
     if isExpired() {
       guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
@@ -70,8 +65,8 @@ class TokenReceiver {
         completionHandler(result)
       }
     } else {
-      guard let token = UserDefaults.standard.value(forKey: Constants.token) as? [String: String],
-        let accessToken = token[Constants.accessToken] else {
+      guard let token = UserDefaults.standard.value(forKey: ApplicationConstants.token) as? [String: String],
+        let accessToken = token[ApplicationConstants.accessToken] else {
           return completionHandler("")
       }
       return completionHandler(accessToken)

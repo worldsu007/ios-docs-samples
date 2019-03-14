@@ -16,20 +16,16 @@ import UIKit
 import MaterialComponents.MaterialColorScheme
 import MaterialComponents.MaterialNavigationDrawer
 
-struct Constants {
-  static let selectedMenuItems: String = "selectedMenuItems"
-}
-
 enum BetaFeatureMenu: Int {
   case sentimentAnalysis = 0, textToSpeech, knowledgeConnector
   func stringValue() -> String {
     switch self {
     case .sentimentAnalysis:
-      return "Sentiment Analysis"
+      return ApplicationConstants.sentimentAnalysis
     case .textToSpeech:
-      return "Text To Speech"
+      return ApplicationConstants.textToSpeech
     case .knowledgeConnector:
-      return "Knowledge Connector"
+      return ApplicationConstants.knowledgeConnector
     }
   }
 }
@@ -57,19 +53,19 @@ class DrawerContentViewController: UITableViewController {
   }
   override func viewDidLoad() {
     super.viewDidLoad()
-    self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: "Cell")
+    self.tableView.register(UITableViewCell.self, forCellReuseIdentifier: ApplicationConstants.tableViewCellID)
     tableView.separatorStyle = .none
     tableView.allowsMultipleSelection = true
   }
 
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
+    let cell = tableView.dequeueReusableCell(withIdentifier: ApplicationConstants.tableViewCellID, for: indexPath)
     cell.textLabel?.text = "\(menuItems[indexPath.item].stringValue())"
     cell.tintColor = ApplicationScheme.shared.colorScheme.primaryColor
     //cell.backgroundColor = colorScheme.surfaceColor
     print(cell.textLabel?.text ?? "")
     let defaults = UserDefaults.standard
-    if let defaultItems = defaults.value(forKey: Constants.selectedMenuItems) as? [Int],
+    if let defaultItems = defaults.value(forKey: ApplicationConstants.selectedMenuItems) as? [Int],
       defaultItems.count > 0 {
       if defaultItems.contains(indexPath.row) {
         cell.accessoryView = UIImageView(image: #imageLiteral(resourceName: "ic_done"))
@@ -91,16 +87,13 @@ class DrawerContentViewController: UITableViewController {
 
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     let cell = tableView.cellForRow(at: indexPath)
-
     tableView.deselectRow(at: indexPath, animated: true)
     let defaults = UserDefaults.standard
     var items = [Int]()
-    if let defaultItems = defaults.value(forKey: Constants.selectedMenuItems) as? [Int],
+    if let defaultItems = defaults.value(forKey: ApplicationConstants.selectedMenuItems) as? [Int],
       defaultItems.count > 0 {
       items = defaultItems
     }
-
-    //        if let item = BetaFeatureMenu(rawValue: indexPath.row) {
     if let index = items.firstIndex(of: indexPath.row) {
       items.remove(at: index)
       cell?.accessoryView = nil
@@ -108,17 +101,15 @@ class DrawerContentViewController: UITableViewController {
       items.append(indexPath.row)
       cell?.accessoryView = UIImageView(image: #imageLiteral(resourceName: "ic_done"))
     }
-    //        }
-    defaults.set(items, forKey: Constants.selectedMenuItems)
+    defaults.set(items, forKey: ApplicationConstants.selectedMenuItems)
   }
-
 }
 
 class DrawerHeaderViewController: UIViewController,MDCBottomDrawerHeader {
   let preferredHeight: CGFloat = 80
   let titleLabel : UILabel = {
     let label = UILabel(frame: .zero)
-    label.text = "Tap to enable additional Dialogflow features"
+    label.text = ApplicationConstants.menuDrawerTitle
     label.sizeToFit()
     return label
   }()

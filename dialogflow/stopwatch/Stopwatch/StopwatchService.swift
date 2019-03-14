@@ -16,12 +16,6 @@
 import Foundation
 import googleapis
 
-let Host = "dialogflow.googleapis.com"
-// TODO: Replace with your GCP PROJECT_ID
-let ProjectName = "your-project-identifier"
-let SessionID = "001"
-let SampleRate = 16000 //Sample rate (in Hertz) of the audio content sent in the query.
-
 typealias StopwatchCompletionHandler =
   (DFStreamingDetectIntentResponse?, NSError?) -> (Void)
 
@@ -34,21 +28,24 @@ enum StopwatchServiceError: Error {
 }
 
 class StopwatchService {
-  var sampleRate: Int = SampleRate
+  var sampleRate: Int = ApplicationConstants.SampleRate
   private var streaming = false
 
   private var client : DFSessions!
   private var writer : GRXBufferedPipe!
   private var call : GRPCProtoCall!
+  private var session : String {
+    return "projects/" + ApplicationConstants.ProjectName + "/agent/sessions/" + ApplicationConstants.SessionID
+  }
 
   static let sharedInstance = StopwatchService()
 
   func authorization(completionHandler: @escaping (String)-> Void) {
     TokenReceiver.getToken { (token) in
       if !token.isEmpty {
-        completionHandler("Bearer " + token)
+        completionHandler(ApplicationConstants.tokenType + token)
       } else {
-        completionHandler("No token is available")
+        completionHandler(ApplicationConstants.noTokenError)
       }
     }
   }
@@ -58,7 +55,7 @@ class StopwatchService {
     authorization { (authT) in
       if (!self.streaming) {
         // if we aren't already streaming, set up a gRPC connection
-        self.client = DFSessions(host:Host)
+        self.client = DFSessions(host:ApplicationConstants.Host)
         self.writer = GRXBufferedPipe()
         self.call = self.client.rpcToStreamingDetectIntent(
           withRequestsWriter: self.writer,
@@ -75,13 +72,12 @@ class StopwatchService {
         let queryInput = DFQueryInput()
         let inputAudioConfig = DFInputAudioConfig()
         inputAudioConfig.audioEncoding = DFAudioEncoding(rawValue:1)!
-        inputAudioConfig.languageCode = "en-US"
+        inputAudioConfig.languageCode = ApplicationConstants.languageCode
         inputAudioConfig.sampleRateHertz = Int32(self.sampleRate)
         queryInput.audioConfig = inputAudioConfig
 
         let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
-        streamingDetectIntentRequest.session = "projects/" + ProjectName +
-          "/agent/sessions/" + SessionID
+        streamingDetectIntentRequest.session = self.session
         streamingDetectIntentRequest.singleUtterance = true
         streamingDetectIntentRequest.queryParams = self.getQueryParmasFor()
         streamingDetectIntentRequest.queryInput = queryInput
@@ -96,19 +92,18 @@ class StopwatchService {
     }
   }
 
-  func streamText(_ userInput: String, completion: @escaping StopwatchTextCompletionHandler) {
+  func sendText(_ userInput: String, completion: @escaping StopwatchTextCompletionHandler) {
     // authenticate using an authorization token (obtained using OAuth)
     authorization { (authT) in
-      self.client = DFSessions(host:Host)
+      self.client = DFSessions(host:ApplicationConstants.Host)
       // send an initial request message to configure the service
       let queryInput = DFQueryInput()
       let inputTextConfig = DFTextInput()
       inputTextConfig.text = userInput
-      inputTextConfig.languageCode = "en-US"
+      inputTextConfig.languageCode = ApplicationConstants.languageCode
       queryInput.text = inputTextConfig
       let detectIntentRequest = DFDetectIntentRequest()
-      detectIntentRequest.session = "projects/" + ProjectName +
-        "/agent/sessions/" + SessionID
+      detectIntentRequest.session = self.session
       detectIntentRequest.queryInput = queryInput
       detectIntentRequest.outputAudioConfig = self.getOutputAudioConfig()
       detectIntentRequest.queryParams = self.getQueryParmasFor()
@@ -123,7 +118,7 @@ class StopwatchService {
 
   func getOutputAudioConfig() -> DFOutputAudioConfig? {
     let defaults = UserDefaults.standard
-    if let defaultItems = defaults.value(forKey: Constants.selectedMenuItems) as? [Int],
+    if let defaultItems = defaults.value(forKey: ApplicationConstants.selectedMenuItems) as? [Int],
       defaultItems.count > 0 {
       if defaultItems.contains(BetaFeatureMenu.textToSpeech.rawValue) {
         let outputAudioConfig = DFOutputAudioConfig()
@@ -144,7 +139,7 @@ class StopwatchService {
   func getQueryParmasFor() -> DFQueryParameters {
     let queryParams = DFQueryParameters()
     let defaults = UserDefaults.standard
-    if let defaultItems = defaults.value(forKey: Constants.selectedMenuItems) as? [Int],
+    if let defaultItems = defaults.value(forKey: ApplicationConstants.selectedMenuItems) as? [Int],
       defaultItems.count > 0 {
       let sentimentSelected =
         defaultItems.contains(BetaFeatureMenu.sentimentAnalysis.rawValue)
@@ -164,9 +159,9 @@ class StopwatchService {
   func getKnowledgeBasePath(handler: @escaping (_ KnowledgeBasePath: String) -> Void) {
     // authenticate using an authorization token (obtained using OAuth)
     authorization { (authT) in
-      let knowledgeBase = DFKnowledgeBases(host: Host)
+      let knowledgeBase = DFKnowledgeBases(host: ApplicationConstants.Host)
       let request = DFListKnowledgeBasesRequest()
-      request.parent = "projects/\(ProjectName)/agent"
+      request.parent = "projects/\(ApplicationConstants.ProjectName)/agent"
       let call = knowledgeBase.rpcToListKnowledgeBases(with: request, handler: {(knowledgeBaseRes, error) in
         if let error = error {
           print("Error occured while calling knowledge base api \(error.localizedDescription)")

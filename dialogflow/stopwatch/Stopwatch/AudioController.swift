@@ -20,7 +20,7 @@ import AVFoundation
 protocol AudioControllerDelegate {
   func processSampleData(_ data:Data) -> Void
 }
-
+//The core functionality of this class is to capture tha audio and convert it into data
 class AudioController {
   var remoteIOUnit: AudioComponentInstance? // optional to allow it to be an inout argument
   var delegate : AudioControllerDelegate!
@@ -37,11 +37,7 @@ class AudioController {
 
     let session = AVAudioSession.sharedInstance()
     do {
-      if #available(iOS 10.0, *) {
-        try session.setCategory(AVAudioSession.Category.record, mode: AVAudioSession.Mode.spokenAudio)
-      } else {
-        // Fallback on earlier versions
-      }
+      try session.setCategory(AVAudioSession.Category.record, mode: AVAudioSession.Mode.spokenAudio)
       try session.setPreferredIOBufferDuration(10)
     } catch {
       return -1
