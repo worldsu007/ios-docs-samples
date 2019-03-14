@@ -16,6 +16,7 @@
 		677B630521F91645000C58E9 /* Rubik-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 677B62FF21F91645000C58E9 /* Rubik-OFL.txt */; };
 		677B630621F91645000C58E9 /* ApplicationScheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 677B630021F91645000C58E9 /* ApplicationScheme.swift */; };
 		677B630721F91645000C58E9 /* ChatTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 677B630121F91645000C58E9 /* ChatTableViewCell.swift */; };
+		678AB1622239B7CC000247CB /* ApplicationConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 678AB1612239B7CC000247CB /* ApplicationConstants.swift */; };
 		D31E0EB81D778A56006A50AB /* StopwatchService.swift in Sources */ = {isa = PBXBuildFile; fileRef = D31E0EB71D778A56006A50AB /* StopwatchService.swift */; };
 		D31E0EBA1D77AA2F006A50AB /* AudioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D31E0EB91D77AA2F006A50AB /* AudioController.swift */; };
 		D34C17D91C948F5800D69BCA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D34C17D81C948F5800D69BCA /* Assets.xcassets */; };
@@ -35,6 +36,7 @@
 		677B62FF21F91645000C58E9 /* Rubik-OFL.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Rubik-OFL.txt"; sourceTree = "<group>"; };
 		677B630021F91645000C58E9 /* ApplicationScheme.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ApplicationScheme.swift; sourceTree = "<group>"; };
 		677B630121F91645000C58E9 /* ChatTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatTableViewCell.swift; sourceTree = "<group>"; };
+		678AB1612239B7CC000247CB /* ApplicationConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationConstants.swift; sourceTree = "<group>"; };
 		6C682F8DD9C94E41979FE816 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		C0B7F558BD8BC89862C8C277 /* Pods_Stopwatch.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Stopwatch.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C2D2368DBC8898A52FE6113B /* Pods-Stopwatch.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Stopwatch.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Stopwatch/Pods-Stopwatch.debug.xcconfig"; sourceTree = "<group>"; };
@@ -114,6 +116,7 @@
 				D392D9851C94937D002F5132 /* Main.storyboard */,
 				D3E34E9F1D77541C00EF755D /* Stopwatch-Bridging-Header.h */,
 				D31E0EB71D778A56006A50AB /* StopwatchService.swift */,
+				678AB1612239B7CC000247CB /* ApplicationConstants.swift */,
 				D34C17CC1C948F5700D69BCA /* Supporting Files */,
 				6708F28C220E44FB00FF5ED3 /* TokenReceiver.swift */,
 				677AEFD12223622C000AA094 /* BottomDrawerViewControllers.swift */,
@@ -301,6 +304,7 @@
 			files = (
 				D31E0EBA1D77AA2F006A50AB /* AudioController.swift in Sources */,
 				677B630621F91645000C58E9 /* ApplicationScheme.swift in Sources */,
+				678AB1622239B7CC000247CB /* ApplicationConstants.swift in Sources */,
 				D31E0EB81D778A56006A50AB /* StopwatchService.swift in Sources */,
 				677B630721F91645000C58E9 /* ChatTableViewCell.swift in Sources */,
 				677AEFD22223622C000AA094 /* BottomDrawerViewControllers.swift in Sources */,
