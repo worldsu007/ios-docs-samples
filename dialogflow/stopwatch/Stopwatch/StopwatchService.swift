@@ -96,7 +96,6 @@ class StopwatchService {
     // authenticate using an authorization token (obtained using OAuth)
     authorization { (authT) in
       self.client = DFSessions(host:ApplicationConstants.Host)
-      // send an initial request message to configure the service
       let queryInput = DFQueryInput()
       let inputTextConfig = DFTextInput()
       inputTextConfig.text = userInput
