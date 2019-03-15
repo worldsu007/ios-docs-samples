@@ -21,7 +21,7 @@ To call the Dialogflow API from iOS, you need to provide authorization tokens wi
 - Enable the [Dialogflow API](https://console.cloud.google.com/apis/librarydialogflow.googleapis.com).
 - [Enable billing][billing].
 - [Import the Dialogflow Agent](https://dialogflow.com/docs/agents/export-import-restore#import) using the `StopwatchAgent.zip` which is located in the `stopwatch` directory. 
-- [Create Service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts). Example name: Dialogflow-Client
+- [Create a Service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) with the following IAM role: Dialogflow API Client. Example name: `dialogflow-client`
 - For your "App Engine Default Service Account" add the following role "Service Account Token Creator" Role.
 - To use [Sentiment Analysis] you need to [Enable beta features](https://cloud.google.com/dialogflow-enterprise/docs/sentiment#enable_beta_features)
 - To use [Text-to-Speech] you need to [Enable beta features](https://cloud.google.com/dialogflow-enterprise/docs/detect-intent-tts#enable_beta_features)
