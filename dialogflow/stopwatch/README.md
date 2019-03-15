@@ -1,6 +1,6 @@
 # Dialogflow Sample
 
-This app demonstrates how to make streaming gRPC connections to the [Dialogflow API]
+This app demonstrates how to make gRPC connections to the [Dialogflow API](https://cloud.google.com/dialogflow-enterprise/)
 
 The app demonstrates how to detect intents:
 - Via Text
@@ -20,14 +20,17 @@ To call the Dialogflow API from iOS, you need to provide authorization tokens wi
 - Create a project with the [Google Cloud Console][cloud-console]
 - Enable the [Dialogflow API](https://console.cloud.google.com/apis/librarydialogflow.googleapis.com).
 - [Enable billing][billing].
-- [Import the Dialogflow Agent](https://dialogflow.com/docs/agents/export-import-restore#import) using file xyz
-- Create Service account with the following IAM role: [Dialogflow-Client](https://cloud.google.com/iam/docs/creating-managing-service-accounts). Example name: Dialogflow-Client
+- [Import the Dialogflow Agent](https://dialogflow.com/docs/agents/export-import-restore#import) using the `StopwatchAgent.zip` which is located in the `stopwatch` directory. 
+- [Create Service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts). Example name: Dialogflow-Client
 - For your "App Engine Default Service Account" add the following role "Service Account Token Creator" Role.
+- To use [Sentiment Analysis] you need to [Enable beta features](https://cloud.google.com/dialogflow-enterprise/docs/sentiment#enable_beta_features)
+- To use [Text-to-Speech] you need to [Enable beta features](https://cloud.google.com/dialogflow-enterprise/docs/detect-intent-tts#enable_beta_features)
+- To use [Knowledge Connectors] you need to [Enable beta features](https://cloud.google.com/dialogflow-enterprise/docs/knowledge-connectors#enable_beta_features)
 
 
 ### Setup the app
 - Clone this repository and `cd` into this directory.
-- Run ./INSTALL-COCOAPODS to install app dependencies. When it finishes, it will open the Stopwatch workspace in Xcode. Since we are using Cocoapods, be sure to open the workspace and not Stopwatch.xcodeproj.
+- Run `./INSTALL-COCOAPODS` to install app dependencies. When it finishes, it will open the Stopwatch workspace in Xcode. Since we are using Cocoapods, be sure to open the workspace and not Stopwatch.xcodeproj.
 - Replace `your-project-identifier` in `ApplicationConstants.swift` with the identifier of your Google Cloud project.
 
 ###  Setup Firebase on the application:
@@ -39,9 +42,11 @@ To call the Dialogflow API from iOS, you need to provide authorization tokens wi
 ###  Setup and Deploy the Firebase Function 
 The Firebase Function provides auth tokens to your app, You'll be using a provided sample function to be run with this app.
 
-- Follow the steps for "1. Set up Node.js and the Firebase CLI" and "2. Initialize Firebase SDK for Cloud Functions" in this [guide](https://firebase.google.com/docs/functions/get-started).
-- Replace index.js file with the [provided index.js](https://github.com/GoogleCloudPlatform/nodejs-docs-samples/blob/16dbb6c7b941c08370bc135bef5049fba67ecd28/functions/dialogflow/functions/index.js).
-- Open index.js, go to function "generateAccessToken", and replace “SERVICE-ACCOUNT-NAME@YOUR_PROJECT_ID.iam.gserviceaccount.com” with your Service account name (Dialogflow-Client) and project id. 
+- Follow the steps in this [guide](https://firebase.google.com/docs/functions/get-started) for: 
+  - "1. Set up Node.js and the Firebase CLI"
+  - "2. Initialize Firebase SDK for Cloud Functions".
+- Replace `index.js` file with the [provided index.js](https://github.com/GoogleCloudPlatform/nodejs-docs-samples/blob/16dbb6c7b941c08370bc135bef5049fba67ecd28/functions/dialogflow/functions/index.js).
+- Open `index.js`, go to function "generateAccessToken", and replace “SERVICE-ACCOUNT-NAME@YOUR_PROJECT_ID.iam.gserviceaccount.com” with your Service account name (`Dialogflow-Client`) and project id. 
 - Deploy getOAuthToken method by running command:
 ```
 firebase deploy —only functions
