@@ -30,7 +30,7 @@ extension ApplicationConstants {
 
 //MARK: Bottom drawer
 struct ApplicationConstants {
-  static let selectedMenuItems = "selectedMenuItems"
+  static let selectedMenuItems = "selected Menu Items"
   static let sentimentAnalysis = "Sentiment Analysis"
   static let textToSpeech = "Text To Speech"
   static let knowledgeConnector = "Knowledge Connector"

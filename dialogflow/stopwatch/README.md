@@ -21,22 +21,23 @@ To call the Dialogflow API from iOS, you need to provide authorization tokens wi
 - Enable the [Dialogflow API](https://console.cloud.google.com/apis/librarydialogflow.googleapis.com).
 - [Enable billing][billing].
 - [Import the Dialogflow Agent](https://dialogflow.com/docs/agents/export-import-restore#import) using the `StopwatchAgent.zip` which is located in the `stopwatch` directory. 
-- [Create a Service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) with the following IAM role: Dialogflow API Client. Example name: `dialogflow-client`
-- For your "App Engine Default Service Account" add the following role "Service Account Token Creator" Role.
+- [Create a Service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) with the following IAM role: `Dialogflow API Client`. Example name: `dialogflow-client`. ([For more info on: how to add roles to a Service Account](https://cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource))
+- For your "App Engine Default Service Account" add the following role `Service Account Token Creator` Role. ([For more info on: how to add roles to a Service Account](https://cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource))
 - To use Sentiment Analysis you need to [Enable beta features](https://cloud.google.com/dialogflow-enterprise/docs/sentiment#enable_beta_features) 
 - To use Text-to-Speech you need to [Enable beta features](https://cloud.google.com/dialogflow-enterprise/docs/detect-intent-tts#enable_beta_features)
 - To use Knowledge Connectors you need to [Enable beta features](https://cloud.google.com/dialogflow-enterprise/docs/knowledge-connectors#enable_beta_features) 
 
 
 ### Setup the app
-- Clone this repository and `cd` into this directory.
-- Run `./INSTALL-COCOAPODS` to install app dependencies. When it finishes, it will open the Stopwatch workspace in Xcode. Since we are using Cocoapods, be sure to open the workspace and not Stopwatch.xcodeproj.
+- Clone this repository `git clone https://github.com/GoogleCloudPlatform/ios-docs-samples.git` 
+- `cd ios-docs-samples/dialogflow/stopwatch/` 
+- Run `./INSTALL-COCOAPODS` to install app dependencies (this can take a long time to run). When it finishes, it will open the Stopwatch workspace in Xcode. Since we are using Cocoapods, be sure to open the `Stopwatch.xcworkspace` and not `Stopwatch.xcodeproj`.
 - Replace `your-project-identifier` in `ApplicationConstants.swift` with the identifier of your Google Cloud project.
 
 ###  Setup Firebase on the application:
 
 - Complete the steps for [Add Firebase to your app](https://firebase.google.com/docs/ios/setup#add_firebase_to_your_app). Note: No need to complete any other sections, they are already done. 
-- In the [Firebase console](https://console.firebase.google.com/), open the Auth section.
+- In the [Firebase console](https://console.firebase.google.com/), open the "Authentication" section under Develop.
 - On the **Sign-in Methods** page, enable the **Anonymous** sign-in method.
 
 ###  Setup and Deploy the Firebase Function 
@@ -45,7 +46,7 @@ The Firebase Function provides auth tokens to your app, You'll be using a provid
 - Follow the steps in this [guide](https://firebase.google.com/docs/functions/get-started) for: 
   - "1. Set up Node.js and the Firebase CLI"
   - "2. Initialize Firebase SDK for Cloud Functions".
-- Replace `index.js` file with the [provided index.js](https://github.com/GoogleCloudPlatform/nodejs-docs-samples/blob/16dbb6c7b941c08370bc135bef5049fba67ecd28/functions/dialogflow/functions/index.js).
+- Replace `index.js` file with the [provided index.js](https://github.com/GoogleCloudPlatform/nodejs-docs-samples/blob/master/functions/dialogflow/functions/index.js).
 - Open `index.js`, go to function "generateAccessToken", and replace “SERVICE-ACCOUNT-NAME@YOUR_PROJECT_ID.iam.gserviceaccount.com” with your Service account name (`dialogflow-client`) and project id. 
 - Deploy getOAuthToken method by running command:
 ```
