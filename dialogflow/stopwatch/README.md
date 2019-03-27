@@ -23,9 +23,9 @@ To call the Dialogflow API from iOS, you need to provide authorization tokens wi
 - [Import the Dialogflow Agent](https://dialogflow.com/docs/agents/export-import-restore#import) using the `StopwatchAgent.zip` which is located in the `stopwatch` directory. 
 - [Create a Service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) with the following IAM role: Dialogflow API Client. Example name: `dialogflow-client`
 - For your "App Engine Default Service Account" add the following role "Service Account Token Creator" Role.
-- To use [Sentiment Analysis] you need to [Enable beta features](https://cloud.google.com/dialogflow-enterprise/docs/sentiment#enable_beta_features)
-- To use [Text-to-Speech] you need to [Enable beta features](https://cloud.google.com/dialogflow-enterprise/docs/detect-intent-tts#enable_beta_features)
-- To use [Knowledge Connectors] you need to [Enable beta features](https://cloud.google.com/dialogflow-enterprise/docs/knowledge-connectors#enable_beta_features)
+- To use Sentiment Analysis you need to [Enable beta features](https://cloud.google.com/dialogflow-enterprise/docs/sentiment#enable_beta_features) 
+- To use Text-to-Speech you need to [Enable beta features](https://cloud.google.com/dialogflow-enterprise/docs/detect-intent-tts#enable_beta_features)
+- To use Knowledge Connectors you need to [Enable beta features](https://cloud.google.com/dialogflow-enterprise/docs/knowledge-connectors#enable_beta_features) 
 
 
 ### Setup the app
@@ -46,7 +46,7 @@ The Firebase Function provides auth tokens to your app, You'll be using a provid
   - "1. Set up Node.js and the Firebase CLI"
   - "2. Initialize Firebase SDK for Cloud Functions".
 - Replace `index.js` file with the [provided index.js](https://github.com/GoogleCloudPlatform/nodejs-docs-samples/blob/16dbb6c7b941c08370bc135bef5049fba67ecd28/functions/dialogflow/functions/index.js).
-- Open `index.js`, go to function "generateAccessToken", and replace “SERVICE-ACCOUNT-NAME@YOUR_PROJECT_ID.iam.gserviceaccount.com” with your Service account name (`Dialogflow-Client`) and project id. 
+- Open `index.js`, go to function "generateAccessToken", and replace “SERVICE-ACCOUNT-NAME@YOUR_PROJECT_ID.iam.gserviceaccount.com” with your Service account name (`dialogflow-Client`) and project id. 
 - Deploy getOAuthToken method by running command:
 ```
 firebase deploy —only functions
