@@ -37,6 +37,7 @@ To call the Dialogflow API from iOS, you need to provide authorization tokens wi
 ###  Setup Firebase on the application:
 
 - Complete the steps for [Add Firebase to your app](https://firebase.google.com/docs/ios/setup#add_firebase_to_your_app). Note: No need to complete any other sections, they are already done. 
+- Use `iOS bundle ID` as `com.sample.cce`
 - In the [Firebase console](https://console.firebase.google.com/), open the "Authentication" section under Develop.
 - On the **Sign-in Methods** page, enable the **Anonymous** sign-in method.
 
