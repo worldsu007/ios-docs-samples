@@ -18,7 +18,7 @@ To call the Dialogflow API from iOS, you need to provide authorization tokens wi
 
 ## Setup
 - Create a project with the [Google Cloud Console][cloud-console]
-- Enable the [Dialogflow API](https://console.cloud.google.com/apis/librarydialogflow.googleapis.com).
+- Enable the [Dialogflow API](https://console.cloud.google.com/apis/library/dialogflow.googleapis.com).
 - [Enable billing][billing].
 - [Import the Dialogflow Agent](https://dialogflow.com/docs/agents/export-import-restore#import) using the `StopwatchAgent.zip` which is located in the `stopwatch` directory. 
 - [Create a Service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) with the following IAM role: `Dialogflow API Client`. Example name: `dialogflow-client`. ([For more info on: how to add roles to a Service Account](https://cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource))
