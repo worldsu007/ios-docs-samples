@@ -19,6 +19,7 @@ To call the Dialogflow API from iOS, you need to provide authorization tokens wi
 ## Setup
 - Create a project (or use an existing one) in the [Google Cloud Console][cloud-console]
 - Enable the [Dialogflow API](https://console.cloud.google.com/apis/library/dialogflow.googleapis.com).
+- Enable the [IAM Service Account Credentials API](https://pantheon.corp.google.com/apis/library/iamcredentials.googleapis.com).
 - [Enable billing][billing].
 - Be sure that you have gone through the steps by expanding the [Create an agent](https://cloud.google.com/dialogflow-enterprise/docs/quickstart-console#create-an-agent) to create and configure your stopwatch agent.
 - [Import the Dialogflow Agent](https://dialogflow.com/docs/agents/export-import-restore#import) using the `StopwatchAgent.zip` which is located in the `stopwatch` directory. 
@@ -54,7 +55,7 @@ The Firebase Function provides auth tokens to your app, You'll be using a provid
 ```
 firebase deploy —only functions
 ```
-- For your "App Engine Default Service Account" add the following role `Service Account Token Creator` Role. ([For more info on: how to add roles to a Service Account](https://cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource))
+- For your "App Engine Default Service Account" add the following IAM role: `Service Account Token Creator` . ([For more info on: how to add roles to a Service Account](https://cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource))
 
 - For more info please refer (https://firebase.google.com/docs/functions/get-started).
 
