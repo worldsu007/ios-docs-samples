@@ -17,15 +17,16 @@ To call the Dialogflow API from iOS, you need to provide authorization tokens wi
 - [Cocoapods][cocoapods] version 1.0 or later
 
 ## Setup
-- Create a project with the [Google Cloud Console][cloud-console]
+- Create a project (or use an existing one) in the [Google Cloud Console][cloud-console]
 - Enable the [Dialogflow API](https://console.cloud.google.com/apis/library/dialogflow.googleapis.com).
 - [Enable billing][billing].
+- Be sure that you have gone through the steps by expanding the [Create an agent](https://cloud.google.com/dialogflow-enterprise/docs/quickstart-console#create-an-agent) to create and configure your stopwatch agent.
 - [Import the Dialogflow Agent](https://dialogflow.com/docs/agents/export-import-restore#import) using the `StopwatchAgent.zip` which is located in the `stopwatch` directory. 
 - [Create a Service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts) with the following IAM role: `Dialogflow API Client`. Example name: `dialogflow-client`. ([For more info on: how to add roles to a Service Account](https://cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource))
-- For your "App Engine Default Service Account" add the following role `Service Account Token Creator` Role. ([For more info on: how to add roles to a Service Account](https://cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource))
-- To use Sentiment Analysis you need to [Enable beta features](https://cloud.google.com/dialogflow-enterprise/docs/sentiment#enable_beta_features) 
-- To use Text-to-Speech you need to [Enable beta features](https://cloud.google.com/dialogflow-enterprise/docs/detect-intent-tts#enable_beta_features)
-- To use Knowledge Connectors you need to [Enable beta features](https://cloud.google.com/dialogflow-enterprise/docs/knowledge-connectors#enable_beta_features) 
+- Enable beta features for:
+  - [Sentiment Analysis](https://cloud.google.com/dialogflow-enterprise/docs/sentiment#enable_beta_features)
+  - [Text-to-Speech](https://cloud.google.com/dialogflow-enterprise/docs/detect-intent-tts#enable_beta_features)
+  - [Knowledge Connectors](https://cloud.google.com/dialogflow-enterprise/docs/knowledge-connectors#enable_beta_features)
 
 
 ### Setup the app
@@ -36,7 +37,7 @@ To call the Dialogflow API from iOS, you need to provide authorization tokens wi
 
 ###  Setup Firebase on the application:
 
-- Complete the steps for [Add Firebase to your app](https://firebase.google.com/docs/ios/setup#add_firebase_to_your_app). Note: No need to complete any other sections, they are already done. 
+- Complete the steps for [Add Firebase to your app](https://firebase.google.com/docs/ios/setup#add_firebase_to_your_app) and expand the "Create a Firebase project" section for instructions on how to add project to your Firebase console. Note: No need to complete any other sections, they are already done. 
 - Use `iOS bundle ID` as `com.sample.dialogflow`
 - In the [Firebase console](https://console.firebase.google.com/), open the "Authentication" section under Develop.
 - On the **Sign-in Methods** page, enable the **Anonymous** sign-in method.
@@ -53,6 +54,8 @@ The Firebase Function provides auth tokens to your app, You'll be using a provid
 ```
 firebase deploy —only functions
 ```
+- For your "App Engine Default Service Account" add the following role `Service Account Token Creator` Role. ([For more info on: how to add roles to a Service Account](https://cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource))
+
 - For more info please refer (https://firebase.google.com/docs/functions/get-started).
 
 
