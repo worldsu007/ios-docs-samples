@@ -20,7 +20,7 @@ import AVFoundation
 protocol AudioControllerDelegate {
   func processSampleData(_ data:Data) -> Void
 }
-
+//The core functionality of this class is to capture tha audio and convert it into data
 class AudioController {
   var remoteIOUnit: AudioComponentInstance? // optional to allow it to be an inout argument
   var delegate : AudioControllerDelegate!
@@ -37,7 +37,7 @@ class AudioController {
 
     let session = AVAudioSession.sharedInstance()
     do {
-      try session.setCategory(AVAudioSessionCategoryRecord)
+      try session.setCategory(AVAudioSession.Category.record, mode: AVAudioSession.Mode.spokenAudio)
       try session.setPreferredIOBufferDuration(10)
     } catch {
       return -1
@@ -160,4 +160,9 @@ func recordingCallback(
   }
 
   return noErr
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromAVAudioSessionCategory(_ input: AVAudioSession.Category) -> String {
+	return input.rawValue
 }

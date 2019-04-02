@@ -187,7 +187,7 @@
                     <connections>
                         <outlet property="audioButton" destination="d0Y-sb-mTr" id="NRP-bJ-f6u"/>
                         <outlet property="cancelButton" destination="UIJ-XP-h0r" id="yUn-XD-psN"/>
-                        <outlet property="keyboardButton" destination="Y6T-34-CsM" id="lKS-6p-iaX"/>
+                        <outlet property="keyboardButton" destination="Y6T-34-CsM" id="5tx-nM-mMX"/>
                         <outlet property="optionsCard" destination="oRr-eI-mVC" id="Dbc-ow-D2L"/>
                         <outlet property="tableView" destination="d8I-QS-FbC" id="jCi-1W-6OW"/>
                     </connections>
