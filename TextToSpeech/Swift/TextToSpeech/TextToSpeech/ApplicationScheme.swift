@@ -36,7 +36,7 @@ class ApplicationScheme: NSObject {
   public let colorScheme: MDCColorScheming = {
     let scheme = MDCSemanticColorScheme(defaults: .material201804)
     //TODO: Customize our app Colors after this line
-    scheme.primaryColor = #colorLiteral(red: 0.2588235294, green: 0.3254901961, blue: 0.6784313725, alpha: 1)
+    scheme.primaryColor = #colorLiteral(red: 0.2588235294, green: 0.3254901961, blue: 0.6862745098, alpha: 1)
     //UIColor(red: 252.0/255.0, green: 184.0/255.0, blue: 171.0/255.0, alpha: 1.0)
     scheme.primaryColorVariant = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
     
