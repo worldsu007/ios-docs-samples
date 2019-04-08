@@ -1,6 +1,6 @@
 # Cloud Text to Speech gRPC Swift Sample
 
-This app demonstrates how to make gRPC connections to the [Cloud TextToSpeech API](https://cloud.google.com/text-to-speech/) to rget the audio data of the text.
+This app demonstrates how to make gRPC connections to the [Cloud TextToSpeech API](https://cloud.google.com/text-to-speech/) to get the audio data of the text.
 
 ## Prerequisites
 - An API key for the Cloud Text to Speech API (See
