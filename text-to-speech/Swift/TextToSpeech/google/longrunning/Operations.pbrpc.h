@@ -33,9 +33,55 @@
 #endif
 
 @class GRPCProtoCall;
+@class GRPCUnaryProtoCall;
+@class GRPCStreamingProtoCall;
+@class GRPCCallOptions;
+@protocol GRPCProtoResponseHandler;
 
 
 NS_ASSUME_NONNULL_BEGIN
+
+@protocol Operations2 <NSObject>
+
+#pragma mark GetOperation(GetOperationRequest) returns (Operation)
+
+/**
+ * Gets the latest state of a long-running operation.  Clients may use this
+ * method to poll the operation result at intervals as recommended by the API
+ * service.
+ */
+- (GRPCUnaryProtoCall *)getOperationWithMessage:(GetOperationRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions;
+
+#pragma mark ListOperations(ListOperationsRequest) returns (ListOperationsResponse)
+
+/**
+ * Lists operations that match the specified filter in the request. If the
+ * server doesn't support this method, it returns
+ * `google.rpc.Code.UNIMPLEMENTED`.
+ */
+- (GRPCUnaryProtoCall *)listOperationsWithMessage:(ListOperationsRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions;
+
+#pragma mark CancelOperation(CancelOperationRequest) returns (Empty)
+
+/**
+ * Starts asynchronous cancellation on a long-running operation.  The server
+ * makes a best effort to cancel the operation, but success is not
+ * guaranteed.  If the server doesn't support this method, it returns
+ * `google.rpc.Code.UNIMPLEMENTED`.  Clients may use
+ * [Operations.GetOperation] or other methods to check whether the
+ * cancellation succeeded or the operation completed despite cancellation.
+ */
+- (GRPCUnaryProtoCall *)cancelOperationWithMessage:(CancelOperationRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions;
+
+#pragma mark DeleteOperation(DeleteOperationRequest) returns (Empty)
+
+/**
+ * Deletes a long-running operation.  It indicates the client is no longer
+ * interested in the operation result. It does not cancel the operation.
+ */
+- (GRPCUnaryProtoCall *)deleteOperationWithMessage:(DeleteOperationRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions;
+
+@end
 
 @protocol Operations <NSObject>
 
@@ -119,8 +165,10 @@ NS_ASSUME_NONNULL_BEGIN
  * Basic service implementation, over gRPC, that only does
  * marshalling and parsing.
  */
-@interface Operations : GRPCProtoService<Operations>
-- (instancetype)initWithHost:(NSString *)host NS_DESIGNATED_INITIALIZER;
+@interface Operations : GRPCProtoService<Operations, Operations2>
+- (instancetype)initWithHost:(NSString *)host callOptions:(GRPCCallOptions *_Nullable)callOptions NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithHost:(NSString *)host;
++ (instancetype)serviceWithHost:(NSString *)host callOptions:(GRPCCallOptions *_Nullable)callOptions;
 + (instancetype)serviceWithHost:(NSString *)host;
 @end
 #endif

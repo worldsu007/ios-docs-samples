@@ -19,13 +19,24 @@
 
 @implementation Operations
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wobjc-designated-initializers"
+
 // Designated initializer
+- (instancetype)initWithHost:(NSString *)host callOptions:(GRPCCallOptions *_Nullable)callOptions {
+  return [super initWithHost:host
+                 packageName:@"google.longrunning"
+                 serviceName:@"Operations"
+                 callOptions:callOptions];
+}
+
 - (instancetype)initWithHost:(NSString *)host {
-  self = [super initWithHost:host
+  return [super initWithHost:host
                  packageName:@"google.longrunning"
                  serviceName:@"Operations"];
-  return self;
 }
+
+#pragma clang diagnostic pop
 
 // Override superclass initializer to disallow different package and service names.
 - (instancetype)initWithHost:(NSString *)host
@@ -34,16 +45,28 @@
   return [self initWithHost:host];
 }
 
+- (instancetype)initWithHost:(NSString *)host
+                 packageName:(NSString *)packageName
+                 serviceName:(NSString *)serviceName
+                 callOptions:(GRPCCallOptions *)callOptions {
+  return [self initWithHost:host callOptions:callOptions];
+}
+
 #pragma mark - Class Methods
 
 + (instancetype)serviceWithHost:(NSString *)host {
   return [[self alloc] initWithHost:host];
 }
 
++ (instancetype)serviceWithHost:(NSString *)host callOptions:(GRPCCallOptions *_Nullable)callOptions {
+  return [[self alloc] initWithHost:host callOptions:callOptions];
+}
+
 #pragma mark - Method Implementations
 
 #pragma mark GetOperation(GetOperationRequest) returns (Operation)
 
+// Deprecated methods.
 /**
  * Gets the latest state of a long-running operation.  Clients may use this
  * method to poll the operation result at intervals as recommended by the API
@@ -64,8 +87,22 @@
              responseClass:[Operation class]
         responsesWriteable:[GRXWriteable writeableWithSingleHandler:handler]];
 }
+/**
+ * Gets the latest state of a long-running operation.  Clients may use this
+ * method to poll the operation result at intervals as recommended by the API
+ * service.
+ */
+- (GRPCUnaryProtoCall *)getOperationWithMessage:(GetOperationRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions {
+  return [self RPCToMethod:@"GetOperation"
+                   message:message
+           responseHandler:handler
+               callOptions:callOptions
+             responseClass:[Operation class]];
+}
+
 #pragma mark ListOperations(ListOperationsRequest) returns (ListOperationsResponse)
 
+// Deprecated methods.
 /**
  * Lists operations that match the specified filter in the request. If the
  * server doesn't support this method, it returns
@@ -86,8 +123,22 @@
              responseClass:[ListOperationsResponse class]
         responsesWriteable:[GRXWriteable writeableWithSingleHandler:handler]];
 }
+/**
+ * Lists operations that match the specified filter in the request. If the
+ * server doesn't support this method, it returns
+ * `google.rpc.Code.UNIMPLEMENTED`.
+ */
+- (GRPCUnaryProtoCall *)listOperationsWithMessage:(ListOperationsRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions {
+  return [self RPCToMethod:@"ListOperations"
+                   message:message
+           responseHandler:handler
+               callOptions:callOptions
+             responseClass:[ListOperationsResponse class]];
+}
+
 #pragma mark CancelOperation(CancelOperationRequest) returns (Empty)
 
+// Deprecated methods.
 /**
  * Starts asynchronous cancellation on a long-running operation.  The server
  * makes a best effort to cancel the operation, but success is not
@@ -114,8 +165,25 @@
              responseClass:[GPBEmpty class]
         responsesWriteable:[GRXWriteable writeableWithSingleHandler:handler]];
 }
+/**
+ * Starts asynchronous cancellation on a long-running operation.  The server
+ * makes a best effort to cancel the operation, but success is not
+ * guaranteed.  If the server doesn't support this method, it returns
+ * `google.rpc.Code.UNIMPLEMENTED`.  Clients may use
+ * [Operations.GetOperation] or other methods to check whether the
+ * cancellation succeeded or the operation completed despite cancellation.
+ */
+- (GRPCUnaryProtoCall *)cancelOperationWithMessage:(CancelOperationRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions {
+  return [self RPCToMethod:@"CancelOperation"
+                   message:message
+           responseHandler:handler
+               callOptions:callOptions
+             responseClass:[GPBEmpty class]];
+}
+
 #pragma mark DeleteOperation(DeleteOperationRequest) returns (Empty)
 
+// Deprecated methods.
 /**
  * Deletes a long-running operation.  It indicates the client is no longer
  * interested in the operation result. It does not cancel the operation.
@@ -134,5 +202,17 @@
              responseClass:[GPBEmpty class]
         responsesWriteable:[GRXWriteable writeableWithSingleHandler:handler]];
 }
+/**
+ * Deletes a long-running operation.  It indicates the client is no longer
+ * interested in the operation result. It does not cancel the operation.
+ */
+- (GRPCUnaryProtoCall *)deleteOperationWithMessage:(DeleteOperationRequest *)message responseHandler:(id<GRPCProtoResponseHandler>)handler callOptions:(GRPCCallOptions *_Nullable)callOptions {
+  return [self RPCToMethod:@"DeleteOperation"
+                   message:message
+           responseHandler:handler
+               callOptions:callOptions
+             responseClass:[GPBEmpty class]];
+}
+
 @end
 #endif

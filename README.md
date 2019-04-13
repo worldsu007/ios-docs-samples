@@ -32,3 +32,7 @@ Samples that demonstrate systems built on Google Cloud Platform.
 ### [screensaver](screensaver)
 
 A screensaver that features Google Cloud Platform products.
+
+### [text-to-speech](text-to-speech)
+
+Samples that demonstrate the [Cloud Text to Speech API](https://cloud.google.com/text-to-speech/).
