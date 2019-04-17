@@ -53,7 +53,7 @@ The Firebase Function provides auth tokens to your app, You'll be using a provid
 - Open `index.js`, go to function "generateAccessToken", and replace “SERVICE-ACCOUNT-NAME@YOUR_PROJECT_ID.iam.gserviceaccount.com” with your Service account name (`dialogflow-client`) and project id. 
 - Deploy getOAuthToken method by running command:
 ```
-firebase deploy —only functions
+firebase deploy -—only functions
 ```
 - For your "App Engine Default Service Account" add the following IAM role: `Service Account Token Creator` . ([For more info on: how to add roles to a Service Account](https://cloud.google.com/iam/docs/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource))
 
