@@ -15,7 +15,6 @@
 //
 
 import UIKit
-import Firebase
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -28,7 +27,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     (_ application: UIApplication,
      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil)
     -> Bool {
-      FirebaseApp.configure()
       TextToSpeechRecognitionService.sharedInstance.getVoiceLists { (formatedVoices, errorString) in
         if let errorString = errorString {
           let alertVC = UIAlertController(title: "Error", message: errorString, preferredStyle: .alert)

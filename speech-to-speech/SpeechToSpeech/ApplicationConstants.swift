@@ -23,7 +23,6 @@ struct ApplicationConstants {
   static let languageCode = "en-US"
   static let STT_Host = "speech.googleapis.com"
   static let TRANSLATE_Host = "translation.googleapis.com"
-
 }
 
 extension ApplicationConstants {

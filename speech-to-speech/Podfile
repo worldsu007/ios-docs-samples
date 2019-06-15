@@ -8,12 +8,7 @@ target 'SpeechToSpeech' do
 
   pod 'googleapis', :path => '.'
   pod 'MaterialComponents'
-  pod 'AuthLibrary', :git => 'https://github.com/google/auth-library-swift.git', :tag => '0.3.4'
-  pod 'Firebase/Core'
-  pod 'Firebase/Functions'
-  pod 'Firebase/Auth'
-  pod 'Firebase/Firestore'
-  
+  pod 'AuthLibrary', :git => 'https://github.com/santhoshvaddi/google-auth-library-swift.git'
 
 end
 

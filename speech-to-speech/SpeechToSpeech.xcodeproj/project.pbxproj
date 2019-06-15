@@ -23,7 +23,6 @@
 		67363D672261A912002FFC1C /* AudioController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67363D662261A912002FFC1C /* AudioController.swift */; };
 		67363D692261AB7E002FFC1C /* ChatTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67363D682261AB7D002FFC1C /* ChatTableViewCell.swift */; };
 		67363D6B2261ADC3002FFC1C /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67363D6A2261ADC3002FFC1C /* SettingsViewController.swift */; };
-		67CB456E22694BB500DF2962 /* TokenService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67CB456D22694BB500DF2962 /* TokenService.swift */; };
 		BDFCF2F051F86DDE82DCFB6A /* Pods_SpeechToSpeech.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EC75F720D7AFE2EC4E066C2F /* Pods_SpeechToSpeech.framework */; };
 /* End PBXBuildFile section */
 
@@ -48,7 +47,6 @@
 		67363D662261A912002FFC1C /* AudioController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AudioController.swift; sourceTree = "<group>"; };
 		67363D682261AB7D002FFC1C /* ChatTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatTableViewCell.swift; sourceTree = "<group>"; };
 		67363D6A2261ADC3002FFC1C /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
-		67CB456D22694BB500DF2962 /* TokenService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TokenService.swift; sourceTree = "<group>"; };
 		98AD464915D17FCB6FDDEF89 /* Pods-SpeechToSpeech.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SpeechToSpeech.release.xcconfig"; path = "Pods/Target Support Files/Pods-SpeechToSpeech/Pods-SpeechToSpeech.release.xcconfig"; sourceTree = "<group>"; };
 		EC75F720D7AFE2EC4E066C2F /* Pods_SpeechToSpeech.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SpeechToSpeech.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -118,7 +116,6 @@
 				67363D572261A0A7002FFC1C /* SpeechRecognitionService.swift */,
 				67363D562261A0A7002FFC1C /* TextToSpeechService.swift */,
 				67363D582261A0A7002FFC1C /* TranslationService.swift */,
-				67CB456D22694BB500DF2962 /* TokenService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -319,7 +316,6 @@
 			files = (
 				67363D672261A912002FFC1C /* AudioController.swift in Sources */,
 				67363D5B2261A0A7002FFC1C /* SpeechRecognitionService.swift in Sources */,
-				67CB456E22694BB500DF2962 /* TokenService.swift in Sources */,
 				67363D5C2261A0A7002FFC1C /* TranslationService.swift in Sources */,
 				67363D692261AB7E002FFC1C /* ChatTableViewCell.swift in Sources */,
 				67363D602261A184002FFC1C /* SpeechViewController.swift in Sources */,

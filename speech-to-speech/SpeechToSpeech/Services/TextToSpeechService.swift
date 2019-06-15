@@ -17,6 +17,8 @@
 import Foundation
 import googleapis
 import AVFoundation
+import AuthLibrary
+
 
 
 class TextToSpeechRecognitionService {
@@ -25,10 +27,9 @@ class TextToSpeechRecognitionService {
   private var call : GRPCProtoCall!
   
   static let sharedInstance = TextToSpeechRecognitionService()
-  private let tokenService = TokenService.shared
 
   func textToSpeech(text:String, completionHandler: @escaping (_ audioData: Data?, _ error: String?) -> Void) {
-    tokenService.authorization(completionHandler: { (authT) in
+    try? FirebaseFunctionTokenProvider().withToken { (authT, error) in
       let synthesisInput = SynthesisInput()
       synthesisInput.text = text
 
@@ -72,7 +73,7 @@ class TextToSpeechRecognitionService {
       self.call = self.client.rpcToSynthesizeSpeech(with: speechRequest, handler: { (synthesizeSpeechResponse, error) in
         if error != nil {
           print(error?.localizedDescription ?? "No error description available")
-           completionHandler(nil, error?.localizedDescription )
+          completionHandler(nil, error?.localizedDescription )
           return
         }
         guard let response = synthesizeSpeechResponse else {
@@ -87,16 +88,16 @@ class TextToSpeechRecognitionService {
         completionHandler(audioData, nil)
       })
 
-      self.call.requestHeaders.setObject(NSString(string:authT), forKey:NSString(string:"Authorization"))
+      self.call.requestHeaders.setObject(NSString(string:authT?.AccessToken ?? ""), forKey:NSString(string:"Authorization"))
       // if the API key has a bundle ID restriction, specify the bundle ID like this
       self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
       print("HEADERS:\(String(describing: self.call.requestHeaders))")
       self.call.start()
-    })
+    }
   }
-    
+
   func getVoiceLists(completionHandler: @escaping ([FormattedVoice]?, String?) -> Void) {
-    tokenService.authorization(completionHandler: { (authT) in
+    try? FirebaseFunctionTokenProvider().withToken { (authT, error) in
       self.call = self.client.rpcToListVoices(with: ListVoicesRequest(), handler: { (listVoiceResponse, error) in
         if let errorStr = error?.localizedDescription {
           completionHandler(nil, errorStr)
@@ -111,18 +112,15 @@ class TextToSpeechRecognitionService {
 
       })
 
-      self.call.requestHeaders.setObject(NSString(string:authT), forKey:NSString(string:"Authorization"))
+      self.call.requestHeaders.setObject(NSString(string:authT?.AccessToken ?? ""), forKey:NSString(string:"Authorization"))
 
       // if the API key has a bundle ID restriction, specify the bundle ID like this
 
       self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
       print("HEADERS:\(String(describing: self.call.requestHeaders))")
       self.call.start()
-
-    })
+    }
   }
-    
-    
 }
 
 struct FormattedVoice {

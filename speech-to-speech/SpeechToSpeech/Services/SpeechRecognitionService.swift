@@ -15,6 +15,7 @@
 //
 import Foundation
 import googleapis
+import AuthLibrary
 
 
 typealias SpeechRecognitionCompletionHandler = (StreamingRecognizeResponse?, NSError?) -> (Void)
@@ -28,11 +29,9 @@ class SpeechRecognitionService {
   private var call : GRPCProtoCall!
   
   static let sharedInstance = SpeechRecognitionService()
-  
-  private let tokenService = TokenService.shared
-  
+
   func streamAudioData(_ audioData: NSData, completion: @escaping SpeechRecognitionCompletionHandler) {
-    tokenService.authorization(completionHandler: { (authT) in
+    try? FirebaseFunctionTokenProvider().withToken { (authT, error) in
       if (!self.streaming) {
         // if we aren't already streaming, set up a gRPC connection
         self.client = Speech(host: ApplicationConstants.STT_Host)
@@ -43,7 +42,7 @@ class SpeechRecognitionService {
             completion(response, error as NSError?)
         })
         
-        self.call.requestHeaders.setObject(NSString(string:authT), forKey:NSString(string:"Authorization"))
+        self.call.requestHeaders.setObject(NSString(string:authT?.AccessToken ?? ""), forKey:NSString(string:"Authorization"))
         // if the API key has a bundle ID restriction, specify the bundle ID like this
         self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!),
                                            forKey:NSString(string:"X-Ios-Bundle-Identifier"))
@@ -91,7 +90,7 @@ class SpeechRecognitionService {
       let streamingRecognizeRequest = StreamingRecognizeRequest()
       streamingRecognizeRequest.audioContent = audioData as Data
       self.writer.writeValue(streamingRecognizeRequest)
-    })
+    }
   }
   
   func stopStreaming() {
