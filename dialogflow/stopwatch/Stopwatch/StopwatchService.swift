@@ -15,6 +15,7 @@
 //
 import Foundation
 import googleapis
+import AuthLibrary
 
 typealias StopwatchCompletionHandler =
   (DFStreamingDetectIntentResponse?, NSError?) -> (Void)
@@ -30,29 +31,19 @@ enum StopwatchServiceError: Error {
 class StopwatchService {
   var sampleRate: Int = ApplicationConstants.SampleRate
   private var streaming = false
-
+  
   private var client : DFSessions!
   private var writer : GRXBufferedPipe!
   private var call : GRPCProtoCall!
   private var session : String {
     return "projects/" + ApplicationConstants.ProjectName + "/agent/sessions/" + ApplicationConstants.SessionID
   }
-
+  
   static let sharedInstance = StopwatchService()
-
-  func authorization(completionHandler: @escaping (String)-> Void) {
-    TokenReceiver.getToken { (token) in
-      if !token.isEmpty {
-        completionHandler(ApplicationConstants.tokenType + token)
-      } else {
-        completionHandler(ApplicationConstants.noTokenError)
-      }
-    }
-  }
-
+  
   func streamAudioData(_ audioData: NSData, completion: @escaping StopwatchCompletionHandler) {
     // authenticate using an authorization token (obtained using OAuth)
-    authorization { (authT) in
+    try? FirebaseFunctionTokenProvider().withToken { (authT, error) in
       if (!self.streaming) {
         // if we aren't already streaming, set up a gRPC connection
         self.client = DFSessions(host:ApplicationConstants.Host)
@@ -62,20 +53,20 @@ class StopwatchService {
           eventHandler: { (done, response, error) in
             completion(response, error as NSError?)
         })
-        self.call.requestHeaders.setObject(NSString(string:authT),
+        self.call.requestHeaders.setObject(NSString(string:authT?.AccessToken ?? ""),
                                            forKey:NSString(string:"Authorization"))
         self.call.start()
         self.streaming = true
-
+        
         // send an initial request message to configure the service
-
+        
         let queryInput = DFQueryInput()
         let inputAudioConfig = DFInputAudioConfig()
         inputAudioConfig.audioEncoding = DFAudioEncoding(rawValue:1)!
         inputAudioConfig.languageCode = ApplicationConstants.languageCode
         inputAudioConfig.sampleRateHertz = Int32(self.sampleRate)
         queryInput.audioConfig = inputAudioConfig
-
+        
         let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
         streamingDetectIntentRequest.session = self.session
         streamingDetectIntentRequest.singleUtterance = true
@@ -84,17 +75,17 @@ class StopwatchService {
         streamingDetectIntentRequest.outputAudioConfig = self.getOutputAudioConfig()
         self.writer.writeValue(streamingDetectIntentRequest)
       }
-
+      
       // send a request message containing the audio data
       let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
       streamingDetectIntentRequest.inputAudio = audioData as Data
       self.writer.writeValue(streamingDetectIntentRequest)
     }
   }
-
+  
   func sendText(_ userInput: String, completion: @escaping StopwatchTextCompletionHandler) {
     // authenticate using an authorization token (obtained using OAuth)
-    authorization { (authT) in
+    try? FirebaseFunctionTokenProvider().withToken { (authT, error) in
       self.client = DFSessions(host:ApplicationConstants.Host)
       let queryInput = DFQueryInput()
       let inputTextConfig = DFTextInput()
@@ -109,12 +100,12 @@ class StopwatchService {
       self.call = self.client.rpcToDetectIntent(with: detectIntentRequest, handler: { (response, error) in
         completion(response, error as NSError?)
       })
-      self.call.requestHeaders.setObject(NSString(string:authT),
+      self.call.requestHeaders.setObject(NSString(string:authT?.AccessToken ?? ""),
                                          forKeyedSubscript:NSString(string:"Authorization"))
       self.call.start()
     }
   }
-
+  
   func getOutputAudioConfig() -> DFOutputAudioConfig? {
     let defaults = UserDefaults.standard
     if let defaultItems = defaults.value(forKey: ApplicationConstants.selectedMenuItems) as? [Int],
@@ -128,13 +119,13 @@ class StopwatchService {
     }
     return nil
   }
-
+  
   func getSentimentAnalysisConfig(sentimentSelected: Bool) -> DFSentimentAnalysisRequestConfig {
     let sentimentConfig = DFSentimentAnalysisRequestConfig()
     sentimentConfig.analyzeQueryTextSentiment = sentimentSelected
     return sentimentConfig
   }
-
+  
   func getQueryParmasFor() -> DFQueryParameters {
     let queryParams = DFQueryParameters()
     let defaults = UserDefaults.standard
@@ -143,7 +134,7 @@ class StopwatchService {
       let sentimentSelected =
         defaultItems.contains(BetaFeatureMenu.sentimentAnalysis.rawValue)
       queryParams.sentimentAnalysisRequestConfig = getSentimentAnalysisConfig(sentimentSelected: sentimentSelected)
-
+      
       if defaultItems.contains(BetaFeatureMenu.knowledgeConnector.rawValue) {
         getKnowledgeBasePath { (knowledgeBasePath) in
           queryParams.knowledgeBaseNamesArray = [knowledgeBasePath]
@@ -154,10 +145,10 @@ class StopwatchService {
     }
     return queryParams
   }
-
+  
   func getKnowledgeBasePath(handler: @escaping (_ KnowledgeBasePath: String) -> Void) {
     // authenticate using an authorization token (obtained using OAuth)
-    authorization { (authT) in
+    try? FirebaseFunctionTokenProvider().withToken { (authT, error) in
       let knowledgeBase = DFKnowledgeBases(host: ApplicationConstants.Host)
       let request = DFListKnowledgeBasesRequest()
       request.parent = "projects/\(ApplicationConstants.ProjectName)/agent"
@@ -175,12 +166,12 @@ class StopwatchService {
           handler(knowledgeBasePath)
         }
       })
-      call.requestHeaders.setObject(NSString(string:authT),
-                                    forKey:NSString(string:"Authorization"))
+      self.call.requestHeaders.setObject(NSString(string:authT?.AccessToken ?? ""),
+                                         forKey:NSString(string:"Authorization"))
       call.start()
     }
   }
-
+  
   func stopStreaming() {
     if (!streaming) {
       return
@@ -188,7 +179,7 @@ class StopwatchService {
     writer.finishWithError(nil)
     streaming = false
   }
-
+  
   func isStreaming() -> Bool {
     return streaming
   }

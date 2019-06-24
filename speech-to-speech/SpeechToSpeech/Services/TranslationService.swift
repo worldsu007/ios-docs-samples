@@ -73,7 +73,7 @@ class TranslationServices {
       })
       self.call.requestHeaders.setObject(NSString(string:authT?.AccessToken ?? ""), forKey:NSString(string:"Authorization"))
       // if the API key has a bundle ID restriction, specify the bundle ID like this
-      self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundlehave extended our project into the 1st week of October(3 more months).-Identifier"))
+      self.call.requestHeaders.setObject(NSString(string:Bundle.main.bundleIdentifier!), forKey:NSString(string:"X-Ios-Bundle-Identifier"))
       self.call.start()
     }
   }

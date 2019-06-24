@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		2C450CC6320CA9890051ABAF /* Pods_Stopwatch.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C0B7F558BD8BC89862C8C277 /* Pods_Stopwatch.framework */; };
-		6708F28D220E44FB00FF5ED3 /* TokenReceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6708F28C220E44FB00FF5ED3 /* TokenReceiver.swift */; };
 		677AEFD22223622C000AA094 /* BottomDrawerViewControllers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 677AEFD12223622C000AA094 /* BottomDrawerViewControllers.swift */; };
 		677B630221F91645000C58E9 /* DialogflowViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 677B62FB21F91645000C58E9 /* DialogflowViewController.swift */; };
 		677B630321F91645000C58E9 /* Rubik-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 677B62FD21F91645000C58E9 /* Rubik-Medium.ttf */; };
@@ -28,7 +27,6 @@
 /* Begin PBXFileReference section */
 		54C3D1E96C8C43AB14662311 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E83ACE29B0D0DF0085BA8F2 /* Pods-Stopwatch.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Stopwatch.release.xcconfig"; path = "Pods/Target Support Files/Pods-Stopwatch/Pods-Stopwatch.release.xcconfig"; sourceTree = "<group>"; };
-		6708F28C220E44FB00FF5ED3 /* TokenReceiver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenReceiver.swift; sourceTree = "<group>"; };
 		677AEFD12223622C000AA094 /* BottomDrawerViewControllers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomDrawerViewControllers.swift; sourceTree = "<group>"; };
 		677B62FB21F91645000C58E9 /* DialogflowViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DialogflowViewController.swift; sourceTree = "<group>"; };
 		677B62FD21F91645000C58E9 /* Rubik-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Rubik-Medium.ttf"; sourceTree = "<group>"; };
@@ -118,7 +116,6 @@
 				D31E0EB71D778A56006A50AB /* StopwatchService.swift */,
 				678AB1612239B7CC000247CB /* ApplicationConstants.swift */,
 				D34C17CC1C948F5700D69BCA /* Supporting Files */,
-				6708F28C220E44FB00FF5ED3 /* TokenReceiver.swift */,
 				677AEFD12223622C000AA094 /* BottomDrawerViewControllers.swift */,
 			);
 			path = Stopwatch;
@@ -308,7 +305,6 @@
 				677B630721F91645000C58E9 /* ChatTableViewCell.swift in Sources */,
 				677AEFD22223622C000AA094 /* BottomDrawerViewControllers.swift in Sources */,
 				677B630221F91645000C58E9 /* DialogflowViewController.swift in Sources */,
-				6708F28D220E44FB00FF5ED3 /* TokenReceiver.swift in Sources */,
 				D3E34EA11D77541D00EF755D /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
