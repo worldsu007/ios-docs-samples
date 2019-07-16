@@ -16,6 +16,7 @@
 import Foundation
 import googleapis
 import AuthLibrary
+import Firebase
 
 typealias StopwatchCompletionHandler =
   (DFStreamingDetectIntentResponse?, NSError?) -> (Void)
@@ -28,84 +29,127 @@ enum StopwatchServiceError: Error {
   case tokenNotAvailable
 }
 
+protocol StopwatchServiceProtocol {
+  func didReceiveTextResponse(response: DFDetectIntentResponse?, error: NSError?)
+  func didReceiveAudioInputResponse(response: DFStreamingDetectIntentResponse?, error: NSError?)
+}
+
 class StopwatchService {
   var sampleRate: Int = ApplicationConstants.SampleRate
   private var streaming = false
-  
   private var client : DFSessions!
   private var writer : GRXBufferedPipe!
   private var call : GRPCProtoCall!
+  var userInputText: String? = "Hello"
+  var delegate: StopwatchServiceProtocol?
+  var audioData: Data?
+  
   private var session : String {
     return "projects/" + ApplicationConstants.ProjectName + "/agent/sessions/" + ApplicationConstants.SessionID
   }
   
   static let sharedInstance = StopwatchService()
   
-  func streamAudioData(_ audioData: NSData, completion: @escaping StopwatchCompletionHandler) {
-    // authenticate using an authorization token (obtained using OAuth)
-    try? FirebaseFunctionTokenProvider().withToken { (authT, error) in
-      if (!self.streaming) {
-        // if we aren't already streaming, set up a gRPC connection
-        self.client = DFSessions(host:ApplicationConstants.Host)
-        self.writer = GRXBufferedPipe()
-        self.call = self.client.rpcToStreamingDetectIntent(
-          withRequestsWriter: self.writer,
-          eventHandler: { (done, response, error) in
-            completion(response, error as NSError?)
-        })
-        self.call.requestHeaders.setObject(NSString(string:authT?.AccessToken ?? ""),
-                                           forKey:NSString(string:"Authorization"))
-        self.call.start()
-        self.streaming = true
-        
-        // send an initial request message to configure the service
-        
-        let queryInput = DFQueryInput()
-        let inputAudioConfig = DFInputAudioConfig()
-        inputAudioConfig.audioEncoding = DFAudioEncoding(rawValue:1)!
-        inputAudioConfig.languageCode = ApplicationConstants.languageCode
-        inputAudioConfig.sampleRateHertz = Int32(self.sampleRate)
-        queryInput.audioConfig = inputAudioConfig
-        
-        let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
-        streamingDetectIntentRequest.session = self.session
-        streamingDetectIntentRequest.singleUtterance = true
-        streamingDetectIntentRequest.queryParams = self.getQueryParmasFor()
-        streamingDetectIntentRequest.queryInput = queryInput
-        streamingDetectIntentRequest.outputAudioConfig = self.getOutputAudioConfig()
-        self.writer.writeValue(streamingDetectIntentRequest)
+  func getDeviceID(callBack: @escaping (String)->Void) {
+    InstanceID.instanceID().instanceID { (result, error) in
+      if let error = error {
+        print("Error fetching remote instance ID: \(error)")
+        callBack( "")
+      } else if let result = result {
+        print("Remove instance ID token: \(result.token)")
+        callBack( result.token)
+      } else {
+        callBack( "")
       }
-      
-      // send a request message containing the audio data
-      let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
-      streamingDetectIntentRequest.inputAudio = audioData as Data
-      self.writer.writeValue(streamingDetectIntentRequest)
     }
   }
   
-  func sendText(_ userInput: String, completion: @escaping StopwatchTextCompletionHandler) {
-    // authenticate using an authorization token (obtained using OAuth)
-    try? FirebaseFunctionTokenProvider().withToken { (authT, error) in
-      self.client = DFSessions(host:ApplicationConstants.Host)
-      let queryInput = DFQueryInput()
-      let inputTextConfig = DFTextInput()
-      inputTextConfig.text = userInput
-      inputTextConfig.languageCode = ApplicationConstants.languageCode
-      queryInput.text = inputTextConfig
-      let detectIntentRequest = DFDetectIntentRequest()
-      detectIntentRequest.session = self.session
-      detectIntentRequest.queryInput = queryInput
-      detectIntentRequest.outputAudioConfig = self.getOutputAudioConfig()
-      detectIntentRequest.queryParams = self.getQueryParmasFor()
-      self.call = self.client.rpcToDetectIntent(with: detectIntentRequest, handler: { (response, error) in
-        completion(response, error as NSError?)
-      })
-      self.call.requestHeaders.setObject(NSString(string:authT?.AccessToken ?? ""),
-                                         forKeyedSubscript:NSString(string:"Authorization"))
-      self.call.start()
+  @objc func streamAudioData() {
+    getDeviceID { (deviceID) in
+      // authenticate using an authorization token (obtained using OAuth)
+      FCMTokenProvider.getToken(deviceID: deviceID) { (shouldWait, token, error) in
+        if let authT = token, shouldWait == false {//Token received execute code
+          if (!self.streaming) {
+            // if we aren't already streaming, set up a gRPC connection
+            self.client = DFSessions(host:ApplicationConstants.Host)
+            self.writer = GRXBufferedPipe()
+            self.call = self.client.rpcToStreamingDetectIntent(
+              withRequestsWriter: self.writer,
+              eventHandler: { (done, response, error) in
+                self.delegate?.didReceiveAudioInputResponse(response: response, error: error as NSError?)
+                //                            completion(response, error as NSError?)
+            })
+            self.call.requestHeaders.setObject(NSString(string:authT),
+                                               
+                                               forKeyedSubscript:NSString(string:"Authorization"))
+            self.call.start()
+            self.streaming = true
+            // send an initial request message to configure the service
+            let queryInput = DFQueryInput()
+            let inputAudioConfig = DFInputAudioConfig()
+            inputAudioConfig.audioEncoding = DFAudioEncoding(rawValue:1)!
+            inputAudioConfig.languageCode = ApplicationConstants.languageCode
+            inputAudioConfig.sampleRateHertz = Int32(self.sampleRate)
+            queryInput.audioConfig = inputAudioConfig
+            let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
+            streamingDetectIntentRequest.session = self.session
+            streamingDetectIntentRequest.singleUtterance = true
+            streamingDetectIntentRequest.queryParams = self.getQueryParmasFor()
+            streamingDetectIntentRequest.queryInput = queryInput
+            streamingDetectIntentRequest.outputAudioConfig = self.getOutputAudioConfig()
+            self.writer.writeValue(streamingDetectIntentRequest)
+            //Remove notification
+            NotificationCenter.default.removeObserver(self, name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
+          }
+          // send a request message containing the audio data
+          let streamingDetectIntentRequest = DFStreamingDetectIntentRequest()
+          streamingDetectIntentRequest.inputAudio = self.audioData ?? Data()
+          self.writer.writeValue(streamingDetectIntentRequest)
+        } else if shouldWait == true {//Token will be sent via PN.
+          //Observe for notification
+          NotificationCenter.default.addObserver(self, selector: #selector(self.streamAudioData), name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
+        } else {// an error occurred
+          //Handle error
+        }
+      }
     }
   }
   
+  @objc func sendText() {
+    getDeviceID { (deviceID) in
+      // authenticate using an authorization token (obtained using OAuth)
+      FCMTokenProvider.getToken(deviceID: deviceID) { (shouldWait, token, error) in
+        if let authT = token,shouldWait == false {
+          self.client = DFSessions(host:ApplicationConstants.Host)
+          let queryInput = DFQueryInput()
+          let inputTextConfig = DFTextInput()
+          inputTextConfig.text = self.userInputText ?? ""
+          inputTextConfig.languageCode = ApplicationConstants.languageCode
+          queryInput.text = inputTextConfig
+          let detectIntentRequest = DFDetectIntentRequest()
+          detectIntentRequest.session = self.session
+          detectIntentRequest.queryInput = queryInput
+          detectIntentRequest.outputAudioConfig = self.getOutputAudioConfig()
+          detectIntentRequest.queryParams = self.getQueryParmasFor()
+          self.call = self.client.rpcToDetectIntent(with: detectIntentRequest, handler: { (response, error) in
+            self.delegate?.didReceiveTextResponse(response: response, error: error as NSError?)
+          })
+          self.call.requestHeaders.setObject(NSString(string:authT),
+                                             forKeyedSubscript:NSString(string:"Authorization"))
+          self.call.start()
+          //Remove notification
+          NotificationCenter.default.removeObserver(self, name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
+        } else if shouldWait == true { //Token will be sent via PN
+          //Observe for notification
+          NotificationCenter.default.addObserver(self, selector: #selector(self.sendText), name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
+        } else { //an error occured
+          //Handle error
+        }
+      }
+    }
+
+  }
+
   func getOutputAudioConfig() -> DFOutputAudioConfig? {
     let defaults = UserDefaults.standard
     if let defaultItems = defaults.value(forKey: ApplicationConstants.selectedMenuItems) as? [Int],
@@ -146,29 +190,40 @@ class StopwatchService {
     return queryParams
   }
   
-  func getKnowledgeBasePath(handler: @escaping (_ KnowledgeBasePath: String) -> Void) {
-    // authenticate using an authorization token (obtained using OAuth)
-    try? FirebaseFunctionTokenProvider().withToken { (authT, error) in
-      let knowledgeBase = DFKnowledgeBases(host: ApplicationConstants.Host)
-      let request = DFListKnowledgeBasesRequest()
-      request.parent = "projects/\(ApplicationConstants.ProjectName)/agent"
-      let call = knowledgeBase.rpcToListKnowledgeBases(with: request, handler: {(knowledgeBaseRes, error) in
-        if let error = error {
-          print("Error occured while calling knowledge base api \(error.localizedDescription)")
-          return
+  @objc func getKnowledgeBasePath(handler: @escaping (_ KnowledgeBasePath: String) -> Void) {
+    getDeviceID { (deviceID) in
+      // authenticate using an authorization token (obtained using OAuth)
+      FCMTokenProvider.getToken(deviceID: "getDeviceIDFromSomewhere") { (shouldWait, token, error) in
+        if let authT = token, shouldWait == false { //Token received execute code
+          let knowledgeBase = DFKnowledgeBases(host: ApplicationConstants.Host)
+          let request = DFListKnowledgeBasesRequest()
+          request.parent = "projects/\(ApplicationConstants.ProjectName)/agent"
+          let call = knowledgeBase.rpcToListKnowledgeBases(with: request, handler: {(knowledgeBaseRes, error) in
+            if let error = error {
+              print("Error occured while calling knowledge base api \(error.localizedDescription)")
+              return
+            }
+            if let res = knowledgeBaseRes,
+              res.knowledgeBasesArray_Count > 0,
+              let lastKB = res.knowledgeBasesArray.lastObject as? DFKnowledgeBase,
+              let knowledgeBasePath = lastKB.name {
+              print("Source response for knowledge base: \(res)")
+              print("Found path:\(knowledgeBasePath)")
+              handler(knowledgeBasePath)
+            }
+          })
+          self.call.requestHeaders.setObject(NSString(string:authT),
+                                             forKey:NSString(string:"Authorization"))
+          call.start()
+          //Remove notification
+          NotificationCenter.default.removeObserver(self, name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
+        } else if shouldWait == true { //Token will be sent via PN
+          //Observe for notification
+          NotificationCenter.default.addObserver(self, selector: #selector(self.getKnowledgeBasePath(handler:)), name: NSNotification.Name(ApplicationConstants.tokenReceived), object: handler)
+        } else { //an error occured
+          //Handle error
         }
-        if let res = knowledgeBaseRes,
-          res.knowledgeBasesArray_Count > 0,
-          let lastKB = res.knowledgeBasesArray.lastObject as? DFKnowledgeBase,
-          let knowledgeBasePath = lastKB.name {
-          print("Source response for knowledge base: \(res)")
-          print("Found path:\(knowledgeBasePath)")
-          handler(knowledgeBasePath)
-        }
-      })
-      self.call.requestHeaders.setObject(NSString(string:authT?.AccessToken ?? ""),
-                                         forKey:NSString(string:"Authorization"))
-      call.start()
+      }
     }
   }
   

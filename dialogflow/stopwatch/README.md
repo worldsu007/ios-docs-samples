@@ -35,11 +35,14 @@ To call the Dialogflow API from iOS, you need to provide authorization tokens wi
 - `cd ios-docs-samples/dialogflow/stopwatch/` 
 - Run `./INSTALL-COCOAPODS` to install app dependencies (this can take a long time to run). When it finishes, it will open the Stopwatch workspace in Xcode. Since we are using Cocoapods, be sure to open the `Stopwatch.xcworkspace` and not `Stopwatch.xcodeproj`.
 - Replace `your-project-identifier` in `ApplicationConstants.swift` with the identifier of your Google Cloud project.
+- Go to the project editor for your target and then click on the Capabilities tab. Look for Push Notifications and toggle its value to ON
 
 ###  Setup Firebase on the application:
 
 - Complete the steps for [Add Firebase to your app](https://firebase.google.com/docs/ios/setup#add_firebase_to_your_app) and expand the "Create a Firebase project" section for instructions on how to add project to your Firebase console. Note: No need to complete any other sections, they are already done. 
-- Use `iOS bundle ID` as `com.sample.dialogflow`
+- Complete the steps to [Configuring APNs with FCM](https://firebase.google.com/docs/cloud-messaging/ios/certs).
+- Use `iOS bundle ID` which has push notifications enabled and select your development team in 'General->Signing' before building the application in an iOS device.
+    Note: as we were going to get the token in notifications, Please run the sample in iOS device instead of running it in the simulator. 
 - In the [Firebase console](https://console.firebase.google.com/), open the "Authentication" section under Develop.
 - On the **Sign-in Methods** page, enable the **Anonymous** sign-in method.
 
@@ -48,7 +51,7 @@ The Firebase Function provides auth tokens to your app, You'll be using a provid
 
 - Follow the steps in this [guide](https://firebase.google.com/docs/functions/get-started) for: 
   - "1. Set up Node.js and the Firebase CLI"
-  - "2. Initialize Firebase SDK for Cloud Functions".
+  - "2. Initialize Firebase SDK for Cloud Functions". 
 - Replace `index.js` file with the [provided index.js](https://github.com/GoogleCloudPlatform/nodejs-docs-samples/blob/master/functions/dialogflow/functions/index.js).
 - Open `index.js`, go to function "generateAccessToken", and replace “SERVICE-ACCOUNT-NAME@YOUR_PROJECT_ID.iam.gserviceaccount.com” with your Service account name (`dialogflow-client`) and project id. 
 - Deploy getOAuthToken method by running command:

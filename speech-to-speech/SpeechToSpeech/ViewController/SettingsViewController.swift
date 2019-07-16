@@ -60,6 +60,10 @@ class SettingsViewController: UIViewController {
   var voiceTypeController: MDCTextInputControllerFilled!
   var allTextFieldControllers = [MDCTextInputControllerFilled]()
   var appBar = MDCAppBar()
+  lazy var alert : UIAlertController = {
+    let alert = UIAlertController(title: ApplicationConstants.tokenFetchingAlertTitle, message: ApplicationConstants.tokenFetchingAlertMessage, preferredStyle: .alert)
+    return alert
+  }()
 
   required init?(coder aDecoder: NSCoder) {
     translateFromController = MDCTextInputControllerFilled(textInput: translateFromView)
@@ -74,6 +78,8 @@ class SettingsViewController: UIViewController {
     self.view.tintColor = .black
     self.view.backgroundColor = ApplicationScheme.shared.colorScheme.surfaceColor
     self.title = ApplicationConstants.SettingsScreenTtitle
+    NotificationCenter.default.addObserver(self, selector: #selector(dismissAlert), name: NSNotification.Name(ApplicationConstants.tokenReceived), object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(presentAlert), name: NSNotification.Name(ApplicationConstants.retreivingToken), object: nil)
     setUpNavigationBarAndItems()
     if let userPreference = UserDefaults.standard.value(forKey: ApplicationConstants.useerLanguagePreferences) as? [String: String] {
       selectedTransFrom = userPreference[ApplicationConstants.selectedTransFrom] ?? ""
@@ -87,6 +93,29 @@ class SettingsViewController: UIViewController {
     }
 
     setupTextFields()
+  }
+
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    if let appD = UIApplication.shared.delegate as? AppDelegate, appD.voiceLists?.isEmpty ?? true {
+
+      presentAlert()
+      appD.fetchVoiceList()
+      NotificationCenter.default.addObserver(self, selector: #selector(dismissAlert), name: NSNotification.Name("FetchVoiceList"), object: nil)
+
+    }
+
+  }
+
+  @objc func presentAlert() {
+    //Showing the alert until token is received
+    if alert.isViewLoaded == false {
+      self.present(alert, animated: true, completion: nil)
+    }
+  }
+
+  @objc func dismissAlert() {
+    alert.dismiss(animated: true, completion: nil)
   }
 
   func setUpNavigationBarAndItems() {
@@ -150,7 +179,6 @@ class SettingsViewController: UIViewController {
                                                      options: [.alignAllLeading, .alignAllTrailing],
                                                      metrics: nil,
                                                      views: views)
-
     constraints += [NSLayoutConstraint(item: translateFromView,
                                        attribute: .leading,
                                        relatedBy: .equal,
@@ -176,9 +204,7 @@ class SettingsViewController: UIViewController {
                                        attribute: .topMargin,
                                        multiplier: 1,
                                        constant: 80)]
-
     NSLayoutConstraint.activate(constraints)
-
     self.allTextFieldControllers.forEach({ (controller) in
       controller.isFloatingEnabled = true
     })
@@ -217,7 +243,6 @@ class SettingsViewController: UIViewController {
 }
 
 extension SettingsViewController: UITextFieldDelegate {
-
   func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
     let index = textField.tag
     if let optionType = OptionsType(rawValue: index) {
@@ -251,12 +276,12 @@ extension SettingsViewController: UITextFieldDelegate {
     }
     return false
   }
+
   func showNoTranslateToError() {
     let alertVC = UIAlertController(title: "Information needed", message: "Please select translate to first", preferredStyle: .alert)
     alertVC.addAction(UIAlertAction(title: "OK", style: .default))
     present(alertVC, animated: true)
   }
-
 }
 
 enum OptionsType: Int {
@@ -315,3 +340,4 @@ enum OptionsType: Int {
     }
   }
 }
+

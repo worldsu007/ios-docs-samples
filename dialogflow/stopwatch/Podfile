@@ -9,6 +9,7 @@ target 'Stopwatch' do
   pod 'googleapis', :path => '.'
   pod 'AuthLibrary', :git => 'https://github.com/google/auth-library-swift.git'
   pod 'MaterialComponents'
+  pod 'Firebase/Messaging'
 
 
 end

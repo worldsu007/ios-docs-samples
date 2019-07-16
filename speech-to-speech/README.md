@@ -29,11 +29,14 @@ To call the APIs from iOS, you need to provide authorization tokens with each re
 - Run `./INSTALL-COCOAPODS` to install app dependencies (this can take few minutes to run). When it finishes, it will open the SpeechtoSpeech workspace in Xcode. Since we are using Cocoapods, be sure to open the `SpeechtoSpeech.xcworkspace` and not `SpeechtoSpeech.xcodeproj`.
 - In Xcode's Project Navigator, open the `ApplicationConstants.swift` file within the `SpeechtoSpeech` directory.
 - Find the line where the `translateParent` is set. Replace the `project_id` string with the identifier for your Google Cloud Project..
+- Go to the project editor for your target and then click on the Capabilities tab. Look for Push Notifications and toggle its value to ON
 
 ###  Setup Firebase on the application:
 
 - Complete the steps for [Add Firebase to your app](https://firebase.google.com/docs/ios/setup#add_firebase_to_your_app) and expand the "Create a Firebase project" section for instructions on how to add project to your Firebase console. Note: No need to complete any other sections, they are already done. 
-- Use `iOS bundle ID` as `com.sample.SpeechtoSpeech`
+- Use `iOS bundle ID` which has push notifications enabled and select your development team in 'General->Signing' before building the application in an iOS device.
+    Note: as we were going to get the token in notifications, Please run the sample in iOS device instead of running it in the simulator. 
+- Complete the steps to [Configuring APNs with FCM](https://firebase.google.com/docs/cloud-messaging/ios/certs).
 - In the [Firebase console](https://console.firebase.google.com/), open the "Authentication" section under Develop.
 - On the **Sign-in Methods** page, enable the **Anonymous** sign-in method.
 
@@ -46,7 +49,6 @@ The Firebase Function provides auth tokens to your app, You'll be using a provid
 - 2. Initialize Firebase SDK for Cloud Functions.
 - Replace `index.js` file with the [provided index.js](https://github.com/GoogleCloudPlatform/nodejs-docs-samples/blob/master/functions/dialogflow/functions/index.js).
 - Replace scope in line 79 with `scope: ['https://www.googleapis.com/auth/cloud-platform'],`
-- Replace `DialogflowTokens` with `SpeechTokens` in Line number 30 and 152.
 - Open `index.js`, go to function "generateAccessToken", and replace “SERVICE-ACCOUNT-NAME@YOUR_PROJECT_ID.iam.gserviceaccount.com” with your Service account name (`translate-client`) and project id. 
 - Deploy getOAuthToken method by running command:
 ```
