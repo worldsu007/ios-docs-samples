@@ -95,7 +95,7 @@ class DrawerContentViewController: UITableViewController {
       items = defaultItems
     }
     if let index = items.firstIndex(of: indexPath.row) {
-      if BetaFeatureMenu.knowledgeConnector.rawValue == items[indexPath.row] {
+      if BetaFeatureMenu.knowledgeConnector.rawValue == items[index] {
         //Remove knowledge connector path from user defaults
         UserDefaults.standard.removeObject(forKey: "knowledgeBasePath")
       }

@@ -13,8 +13,8 @@ To call the Dialogflow API from iOS, you need to provide authorization tokens wi
 
 ## Prerequisites
 - An OSX machine or simulator
-- [Xcode 9.1][xcode] or later
-- [Cocoapods][cocoapods] version 1.0 or later
+- [Xcode 10][xcode] or higher
+- [Cocoapods][cocoapods]
 
 ## Setup
 - Create a project (or use an existing one) in the [Google Cloud Console][cloud-console]

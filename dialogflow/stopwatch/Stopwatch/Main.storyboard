@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="dCJ-Kd-el1">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="dCJ-Kd-el1">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -23,6 +23,7 @@
                                 <subviews>
                                     <button hidden="YES" opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="UIJ-XP-h0r" customClass="MDCFloatingButton">
                                         <rect key="frame" x="167.5" y="12" width="40" height="40"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="40" id="9O9-v4-XtH" userLabel="height = 40"/>
                                             <constraint firstAttribute="width" secondItem="UIJ-XP-h0r" secondAttribute="height" id="gYi-dd-hFI"/>
@@ -32,7 +33,6 @@
                                         <state key="normal" image="CancelIcon"/>
                                         <connections>
                                             <action selector="didTapCancelButton:" destination="dCJ-Kd-el1" eventType="touchUpInside" id="OlS-uD-pGU"/>
-                                            <action selector="didTapMicrophone:" destination="dCJ-Kd-el1" eventType="touchUpInside" id="7Yl-L9-56O"/>
                                         </connections>
                                     </button>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="oRr-eI-mVC" customClass="MDCCard">
@@ -198,8 +198,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="CancelIcon" width="48" height="48"/>
-        <image name="Keypad" width="48" height="48"/>
-        <image name="Mic" width="48" height="48"/>
+        <image name="CancelIcon" width="24" height="24"/>
+        <image name="Keypad" width="24" height="24"/>
+        <image name="Mic" width="24" height="24"/>
     </resources>
 </document>
