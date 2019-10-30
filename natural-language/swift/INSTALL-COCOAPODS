@@ -17,7 +17,6 @@ curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/f
 curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/resource.proto >> resource.proto
 curl https://raw.githubusercontent.com/googleapis/googleapis/master/google/api/launch_stage.proto >> launch_stage.proto
 
-
 cd ..
 
 
@@ -59,7 +58,7 @@ echo "Fix the bad imports in the generated files"
 grep -rl "google/api/Annotations.pbobjc.h"  google/** | xargs sed -i '' s@'"google\/api\/Annotations\.pbobjc\.h"'@'\<googleapis\/Annotations\.pbobjc\.h\>'@g
 grep -rl "google/longrunning/Operations.pbobjc.h"  google/** | xargs sed -i '' s@'"google\/longrunning\/Operations\.pbobjc\.h"'@'\<googleapis\/Operations\.pbobjc\.h\>'@g
 grep -rl "google/rpc/Status.pbobjc.h"  google/** | xargs sed -i '' s@'"google\/rpc\/Status\.pbobjc\.h"'@'\<googleapis\/Status\.pbobjc\.h\>'@g
-
+grep -rl "google/cloud/texttospeech/v1beta1/CloudTts.pbobjc.h" google/** | xargs sed -i '' s@'"google\/cloud\/texttospeech\/v1beta1\/CloudTts\.pbobjc\.h"'@'\"CloudTts\.pbobjc\.h\"'@g
 
 grep -rl "Annotations.pbobjc.h"  pods/** | \
 	xargs sed -i '' s@'"Annotations\.pbobjc\.h"'@'\<Firestore\/Protos\/objc\/google\/api\/Annotations\.pbobjc\.h\>'@g
@@ -70,9 +69,8 @@ grep -rl "Latlng.pbobjc.h"  pods/** | \
 grep -rl "Document.pbobjc.h"  pods/** | \
 	xargs sed -i '' s@'"Document\.pbobjc\.h"'@'\<Firestore\/Protos\/objc\/google\/firestore\/v1\/Document\.pbobjc\.h\>'@g
 
-
 echo "Opening the project workspace in Xcode"
-open Translation.xcworkspace
+open NaturalLanguage.xcworkspace
 
 echo "Now press the run button!"
 

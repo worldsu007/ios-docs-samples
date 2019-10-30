@@ -37,6 +37,6 @@ A screensaver that features Google Cloud Platform products.
 
 Samples that demonstrate the [Cloud Text to Speech API](https://cloud.google.com/text-to-speech/).
 
-### [translation](translation)
+### [natural-language](natural-language)
 
-Samples that demonstrate the [Cloud Translation](https://cloud.google.com/translate/)
+Samples that demonstrate the [Cloud Natural language](https://cloud.google.com/natural-language/)
