@@ -31,7 +31,7 @@ class ViewController : UIViewController, AudioControllerDelegate {
   @IBAction func recordAudio(_ sender: NSObject) {
     let audioSession = AVAudioSession.sharedInstance()
     do {
-      try audioSession.setCategory(AVAudioSessionCategoryRecord)
+        try audioSession.setCategory(AVAudioSession.Category.record)
     } catch {
 
     }
